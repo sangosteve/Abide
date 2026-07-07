@@ -40,6 +40,10 @@ function RootLayoutNav() {
         name="media"
         options={{ headerShown: false, presentation: "card" }}
       />
+      <Stack.Screen
+        name="bible-study"
+        options={{ headerShown: false, presentation: "card" }}
+      />
     </Stack>
   );
 }
