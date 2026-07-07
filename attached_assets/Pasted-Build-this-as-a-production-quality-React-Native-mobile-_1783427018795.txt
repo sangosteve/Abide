@@ -1,0 +1,519 @@
+Build this as a production-quality **React Native mobile app using Expo** based on the attached Visily design screens.
+
+The attached designs are the primary UI/UX reference. Please recreate the app as closely as possible in React Native, preserving the layout, spacing, visual hierarchy, typography feel, colors, rounded cards, bottom navigation, icons, and premium church-app aesthetic.
+
+This is a **church member-facing mobile app**. It should include sermons, podcasts/messages, events, giving, community discussions, prayer requests, media galleries, and user profile features.
+
+Do not build this as a generic web dashboard.
+Do not simplify the design into basic wireframes.
+Build it as a polished mobile app that feels ready for real users.
+
+---
+
+## Tech Stack Requirements
+
+Use:
+
+* Expo React Native
+* TypeScript
+* Expo Router or React Navigation
+* Reusable components
+* Clean folder structure
+* Mock data for now
+* Mobile-first layout
+* Modern icons using a suitable icon library
+* Proper styling, spacing, and reusable theme variables
+
+The app should be previewable in Expo Go.
+
+For now, use local/mock data instead of a real backend, but structure the app so that a backend/API can be connected later.
+
+---
+
+## Main Goal
+
+Recreate the attached Visily mobile app screens as a working Expo React Native app.
+
+The app should include the following bottom navigation tabs:
+
+1. Home
+2. Sermons
+3. Events
+4. Give
+5. More
+
+The app should feel like a premium church engagement platform combining:
+
+* a sermon/media app
+* an events app
+* a giving app
+* a community app
+* a member engagement app
+
+---
+
+## Design Direction
+
+Use the attached screens as the design anchor.
+
+Maintain:
+
+* deep navy / midnight blue tones
+* rich purple accent color
+* soft gold highlights
+* white and light gray content backgrounds
+* rounded cards
+* soft shadows
+* clean iconography
+* elegant, modern typography
+* strong call-to-action buttons
+* consistent spacing
+* professional App Store-quality UI
+
+The design should feel:
+
+* spiritual
+* modern
+* warm
+* premium
+* clean
+* trustworthy
+* easy to use
+
+---
+
+## Required Screens
+
+Please implement the following screens.
+
+### 1. Welcome / Authentication Screen
+
+Create a welcome screen with:
+
+* app logo/name
+* church-inspired visual style
+* welcome message
+* Log In button
+* Create Account button
+* Explore as Guest option
+
+For now, buttons can navigate into the app without real authentication.
+
+---
+
+### 2. Home Screen
+
+Create a home screen with:
+
+* personalized greeting
+* notification icon
+* profile/avatar icon
+* featured sermon card
+* quick action buttons
+* upcoming event preview
+* daily verse card
+* bottom tab navigation
+
+Quick actions should include:
+
+* Daily Verse
+* Prayer
+* Give
+* Bible
+
+The featured sermon card should include:
+
+* sermon title
+* speaker
+* image/banner
+* play button
+
+---
+
+### 3. Sermons Screen
+
+Create a sermons listing screen with:
+
+* page title
+* search icon
+* filter chips:
+
+  * All
+  * Series
+  * Topics
+  * Speakers
+* current sermon series card
+* list of sermons
+
+Each sermon item should include:
+
+* thumbnail
+* sermon title
+* speaker
+* date
+* scripture reference
+* download icon
+* more/options icon
+
+Clicking a sermon should open the sermon detail/player screen.
+
+---
+
+### 4. Sermon Detail / Player Screen
+
+Create a sermon player screen with:
+
+* sermon artwork/banner
+* title
+* speaker
+* date
+* audio progress bar
+* play/pause button
+* rewind and forward buttons
+* action buttons:
+
+  * Notes
+  * Scripture
+  * Download
+  * Save
+* scripture reference card
+* back button
+* share/save icons
+
+This screen should look premium and media-rich, using a darker navy/purple background similar to the attached design.
+
+Audio playback can be mocked for now. The controls only need to visually work.
+
+---
+
+### 5. Events Screen
+
+Create an events list screen with:
+
+* page title
+* search icon
+* calendar icon
+* calendar/list toggle
+* event category chips:
+
+  * All
+  * Worship
+  * Youth
+  * Community
+  * Kids
+* grouped event list by month
+
+Each event item should include:
+
+* date block
+* event title
+* time
+* venue
+* thumbnail image
+
+Clicking an event should open the event detail screen.
+
+---
+
+### 6. Event Detail Screen
+
+Create an event detail screen with:
+
+* large hero/banner image
+* event title
+* event tag/category
+* date and time
+* venue/location
+* host or speaker
+* event description
+* Register Now button
+* Share Event button
+* back button
+
+The layout should closely follow the attached event detail design.
+
+---
+
+### 7. Giving Screen
+
+Create a giving/donations screen with:
+
+* page title
+* tabs:
+
+  * Give
+  * Scheduled
+  * History
+* fund selection cards:
+
+  * Tithe
+  * Offering
+  * Missions
+  * Building Fund
+* amount selector chips:
+
+  * $25
+  * $50
+  * $100
+  * $250
+  * Other
+* plus/minus amount controls
+* payment method card
+* Give Now button
+* secure giving reassurance text
+
+For now, do not process real payments.
+When the user taps Give Now, show a clean confirmation modal or success message.
+
+The design should feel trustworthy and simple.
+
+---
+
+### 8. Community Screen
+
+Create a community/discussions screen with:
+
+* page title
+* search icon
+* notification icon
+* tabs:
+
+  * Discussions
+  * Prayer Requests
+  * Groups
+* post composer field saying “What’s on your heart?”
+* feed of discussion posts
+* user avatars
+* likes/reactions
+* comment count
+* Like and Comment actions
+
+This screen should feel warm, safe, and community-oriented.
+
+---
+
+### 9. Media / Gallery Screen
+
+Create a media screen with:
+
+* page title
+* search icon
+* tabs:
+
+  * All
+  * Photos
+  * Videos
+  * Albums
+* featured album banner
+* recent videos section
+* photo memories section
+* horizontal media cards
+* play icons on video thumbnails
+* View All links
+
+The screen should showcase past church events, photos, videos, reels, and albums.
+
+---
+
+### 10. More Screen
+
+Create a More screen with menu items for:
+
+* Profile
+* Notifications
+* Prayer Requests
+* Saved Sermons
+* Giving History
+* My Events
+* Settings
+* About Church
+* Contact Us
+* Log Out
+
+This screen should use the same design system and feel consistent with the rest of the app.
+
+---
+
+## Component Requirements
+
+Create reusable components such as:
+
+* AppHeader
+* BottomTabs
+* PrimaryButton
+* SecondaryButton
+* SectionHeader
+* SermonCard
+* SermonListItem
+* EventCard
+* EventDateBlock
+* GivingFundCard
+* AmountChip
+* CommunityPostCard
+* MediaCard
+* QuickActionCard
+* DailyVerseCard
+* TabChips
+* EmptyState
+* Avatar
+* IconButton
+
+Do not duplicate UI code unnecessarily.
+Structure the app cleanly.
+
+---
+
+## Suggested Folder Structure
+
+Use a clean structure similar to this:
+
+* app/
+
+  * index.tsx
+  * welcome.tsx
+  * sermon/[id].tsx
+  * event/[id].tsx
+  * tabs/
+
+    * home.tsx
+    * sermons.tsx
+    * events.tsx
+    * give.tsx
+    * community.tsx
+    * media.tsx
+    * more.tsx
+
+* components/
+
+  * common/
+  * sermons/
+  * events/
+  * giving/
+  * community/
+  * media/
+
+* constants/
+
+  * theme.ts
+  * mockData.ts
+
+* types/
+
+  * index.ts
+
+* assets/
+
+  * images/
+  * icons/
+
+You may adjust the structure if Expo Router requires a better setup, but keep it clean and scalable.
+
+---
+
+## Data Requirements
+
+Use mock data for:
+
+* sermons
+* sermon series
+* speakers/pastors
+* events
+* giving funds
+* community posts
+* prayer requests
+* media albums
+* videos
+* daily verse
+* user profile
+
+The mock data should be realistic and church-related.
+
+Example sermon data:
+
+* title
+* speaker
+* date
+* scripture
+* duration
+* thumbnail
+* description
+* series
+
+Example event data:
+
+* title
+* category
+* date
+* time
+* venue
+* host
+* description
+* image
+
+Example giving fund data:
+
+* Tithe
+* Offering
+* Missions
+* Building Fund
+
+---
+
+## Interaction Requirements
+
+Implement basic navigation and interactions:
+
+* Welcome screen buttons enter the app
+* Sermon cards open sermon detail
+* Event cards open event detail
+* Bottom tabs switch screens
+* Giving amount chips update selected amount
+* Plus/minus buttons adjust giving amount
+* Give Now shows success confirmation
+* Community tabs switch between Discussions, Prayer Requests, and Groups
+* Media tabs switch between All, Photos, Videos, and Albums
+* Save/download/share buttons can show simple toast or visual feedback
+
+No real backend is needed yet.
+
+---
+
+## Quality Requirements
+
+The final app must:
+
+* match the attached design style closely
+* look polished on mobile
+* use consistent spacing and alignment
+* have reusable styling
+* avoid messy hardcoded layouts
+* avoid default/plain React Native styling
+* avoid generic placeholder UI
+* use realistic mock content
+* feel like a real church mobile app
+
+Please prioritize design fidelity and professional UI quality.
+
+---
+
+## Important Notes
+
+The attached Visily designs are not just inspiration; they are the main reference. Recreate the screens as closely as possible while using proper React Native components.
+
+Do not only create one screen.
+Build the full user-facing mobile app flow.
+
+Do not build the admin portal yet.
+This request is only for the member/user mobile app.
+
+The result should be a clean Expo React Native project that can later be connected to a backend for sermons, events, donations, media uploads, discussions, and church member management.
+
+Final output should include:
+
+1. working Expo React Native app
+2. clean navigation
+3. all requested screens
+4. reusable components
+5. mock data
+6. polished styling
+7. clear instructions for running the app

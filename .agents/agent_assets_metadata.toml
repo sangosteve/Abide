@@ -1,0 +1,20 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "GI6Fcf7uPtNrgsfO9WJ8D"
+uri = "file://artifacts/faithconnect/assets/images/icon.png"
+type = "image"
+title = "faithconnect app icon"
+
+[[generated]]
+id = "zwrngQEPx-1z1rpYHRSFY"
+uri = "file://artifacts/faithconnect/assets/images/sermon_hero.png"
+type = "image"
+title = "sermon hero banner"
+
+[[generated]]
+id = "_t8Fx1CBv5kDVqm0665vW"
+uri = "file://artifacts/faithconnect/assets/images/church_interior.png"
+type = "image"
+title = "church interior"
