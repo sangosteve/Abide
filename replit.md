@@ -1,6 +1,6 @@
-# [Project name]
+# FaithConnect
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+A church-focused mobile app that helps congregations stay connected through sermons, events, Bible study, media, and community features.
 
 ## Run & Operate
 
