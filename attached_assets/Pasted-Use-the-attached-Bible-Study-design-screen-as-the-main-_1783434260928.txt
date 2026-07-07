@@ -1,0 +1,92 @@
+Use the attached Bible Study design screen as the main reference.
+
+Build only the MVP version of the Bible Study module for our church app using React Native / Expo.
+
+Do not build the full advanced version yet. Keep it simple, polished, and practical for a small church.
+
+The goal of this MVP is to allow members to follow a church-led Bible study series, open lessons, read scripture and teaching notes, answer reflection questions, write personal notes, and track progress.
+
+Keep the same visual style as the attached screen:
+- white background
+- blue accent color
+- rounded cards
+- soft shadows
+- clean typography
+- bottom navigation
+- modern mobile UI
+- premium but simple layout
+
+Required MVP screens:
+
+1. Bible Study Home Screen
+- header with Bible Study title
+- search icon
+- notification icon
+- current series hero card
+- progress percentage
+- lesson list
+- reading plan preview card
+- study notes preview card
+- bottom navigation
+
+2. Study Plan Detail Screen
+- hero image
+- study title
+- short description
+- teacher/pastor name
+- number of sessions
+- progress bar
+- Continue Study button
+- list of lessons/sessions
+- show lesson status: Completed, Resume, Start
+
+3. Lesson Detail Screen
+- lesson title
+- study series name
+- scripture reference
+- scripture text
+- key thought
+- short teaching notes
+- reflection questions
+- prayer point
+- personal notes text area
+- save notes button
+- Mark as Complete button
+- Continue to Next Lesson button
+
+4. Basic Notes Functionality
+- allow the user to type and save notes for each lesson
+- show last saved timestamp
+- keep notes in local/mock state for now
+
+5. Basic Progress Tracking
+- mark lesson as complete
+- update progress percentage
+- show completed/resume/start status on lesson cards
+
+Use mock data for now.
+
+No backend is required yet.
+No AI assistant is required yet.
+No group discussion is required yet.
+No advanced reading plan detail is required yet.
+No admin portal is required yet.
+
+Use reusable components such as:
+- StudyHeroCard
+- LessonCard
+- ReadingPlanCard
+- StudyNotesCard
+- ScriptureCard
+- ReflectionQuestionCard
+- PrayerPointCard
+- NotesEditor
+- ProgressBar
+- PrimaryButton
+
+The final result should feel like a serious Bible study and discipleship feature, but still remain simple enough for a first MVP release.
+
+The MVP should answer this question:
+Can a church member open the app, continue the current Bible study, read the lesson, write notes, complete the lesson, and track their progress?
+
+If yes, the MVP is successful.
