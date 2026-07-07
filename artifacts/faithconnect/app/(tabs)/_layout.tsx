@@ -2,12 +2,11 @@ import { BlurView } from "expo-blur";
 import { isLiquidGlassAvailable } from "expo-glass-effect";
 import { Tabs } from "expo-router";
 import { Icon, Label, NativeTabs } from "expo-router/unstable-native-tabs";
-import { SymbolView } from "expo-symbols";
-import { Feather } from "@expo/vector-icons";
 import React from "react";
 import { Platform, StyleSheet, View, useColorScheme } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { HIcon } from "@/components/HIcon";
 import { useColors } from "@/hooks/useColors";
 
 function NativeTabLayout() {
@@ -85,60 +84,45 @@ function ClassicTabLayout() {
         name="index"
         options={{
           title: "Home",
-          tabBarIcon: ({ color }) =>
-            isIOS ? (
-              <SymbolView name="house" tintColor={color} size={24} />
-            ) : (
-              <Feather name="home" size={22} color={color} />
-            ),
+          tabBarIcon: ({ color, focused }) => (
+            <HIcon name={focused ? "home-fill" : "home"} size={22} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
         name="sermons"
         options={{
           title: "Sermons",
-          tabBarIcon: ({ color }) =>
-            isIOS ? (
-              <SymbolView name="play.circle" tintColor={color} size={24} />
-            ) : (
-              <Feather name="play-circle" size={22} color={color} />
-            ),
+          tabBarIcon: ({ color, focused }) => (
+            <HIcon name={focused ? "play-circle-fill" : "play-circle"} size={22} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
         name="events"
         options={{
           title: "Events",
-          tabBarIcon: ({ color }) =>
-            isIOS ? (
-              <SymbolView name="calendar" tintColor={color} size={24} />
-            ) : (
-              <Feather name="calendar" size={22} color={color} />
-            ),
+          tabBarIcon: ({ color }) => (
+            <HIcon name="calendar" size={22} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
         name="give"
         options={{
           title: "Give",
-          tabBarIcon: ({ color }) =>
-            isIOS ? (
-              <SymbolView name="heart" tintColor={color} size={24} />
-            ) : (
-              <Feather name="heart" size={22} color={color} />
-            ),
+          tabBarIcon: ({ color, focused }) => (
+            <HIcon name={focused ? "heart-fill" : "heart"} size={22} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
         name="community"
         options={{
           title: "Community",
-          tabBarIcon: ({ color }) =>
-            isIOS ? (
-              <SymbolView name="person.2" tintColor={color} size={24} />
-            ) : (
-              <Feather name="users" size={22} color={color} />
-            ),
+          tabBarIcon: ({ color }) => (
+            <HIcon name="users" size={22} color={color} />
+          ),
         }}
       />
     </Tabs>

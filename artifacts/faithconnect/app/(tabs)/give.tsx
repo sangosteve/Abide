@@ -1,4 +1,4 @@
-import { Feather } from "@expo/vector-icons";
+import { HIcon } from "@/components/HIcon";
 import * as Haptics from "expo-haptics";
 import React, { useState } from "react";
 import {
@@ -64,7 +64,7 @@ export default function GiveScreen() {
         <View style={[styles.header, { paddingTop: topPadding }]}>
           <Text style={[styles.pageTitle, { color: colors.foreground }]}>Give</Text>
           <TouchableOpacity style={[styles.iconBtn, { backgroundColor: colors.muted }]}>
-            <Feather name="bell" size={20} color={colors.foreground} />
+            <HIcon name="bell" size={20} color={colors.foreground} />
           </TouchableOpacity>
         </View>
 
@@ -124,11 +124,11 @@ export default function GiveScreen() {
                   >
                     {selectedFund === fund.id && (
                       <View style={[styles.fundCheckmark, { backgroundColor: colors.primary }]}>
-                        <Feather name="check" size={10} color="#FFF" />
+                        <HIcon name="check" size={10} color="#FFF" />
                       </View>
                     )}
                     <View style={[styles.fundIconBox, { backgroundColor: selectedFund === fund.id ? colors.primary : colors.muted }]}>
-                      <Feather
+                      <HIcon
                         name={fundIcons[fund.id] as any}
                         size={22}
                         color={selectedFund === fund.id ? "#FFF" : colors.mutedForeground}
@@ -158,7 +158,7 @@ export default function GiveScreen() {
                     setSelectedPreset(null);
                   }}
                 >
-                  <Feather name="x" size={14} color={colors.mutedForeground} />
+                  <HIcon name="x" size={14} color={colors.mutedForeground} />
                 </TouchableOpacity>
               </View>
               <View style={styles.presetRow}>
@@ -190,13 +190,13 @@ export default function GiveScreen() {
                   style={[styles.adjustBtn, { borderColor: colors.border }]}
                   onPress={() => adjustAmount(-5)}
                 >
-                  <Feather name="minus" size={20} color={colors.foreground} />
+                  <HIcon name="minus" size={20} color={colors.foreground} />
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[styles.adjustBtn, { borderColor: colors.border }]}
                   onPress={() => adjustAmount(5)}
                 >
-                  <Feather name="plus" size={20} color={colors.foreground} />
+                  <HIcon name="plus" size={20} color={colors.foreground} />
                 </TouchableOpacity>
               </View>
             </View>
@@ -210,7 +210,7 @@ export default function GiveScreen() {
                 style={[styles.paymentCard, { backgroundColor: colors.card, borderColor: colors.border }]}
               >
                 <View style={[styles.cardIcon, { backgroundColor: colors.muted }]}>
-                  <Feather name="credit-card" size={20} color={colors.foreground} />
+                  <HIcon name="credit-card" size={20} color={colors.foreground} />
                 </View>
                 <View style={styles.cardInfo}>
                   <Text style={[styles.cardName, { color: colors.foreground }]}>
@@ -220,10 +220,10 @@ export default function GiveScreen() {
                     Expires 12/26
                   </Text>
                 </View>
-                <Feather name="chevron-right" size={18} color={colors.mutedForeground} />
+                <HIcon name="chevron-right" size={18} color={colors.mutedForeground} />
               </TouchableOpacity>
               <TouchableOpacity style={styles.addPaymentBtn}>
-                <Feather name="plus" size={16} color={colors.primary} />
+                <HIcon name="plus" size={16} color={colors.primary} />
                 <Text style={[styles.addPaymentText, { color: colors.primary }]}>
                   Add New Payment Method
                 </Text>
@@ -232,7 +232,7 @@ export default function GiveScreen() {
 
             {/* Secure note */}
             <View style={styles.secureNote}>
-              <Feather name="lock" size={14} color={colors.mutedForeground} />
+              <HIcon name="lock" size={14} color={colors.mutedForeground} />
               <Text style={[styles.secureTitle, { color: colors.mutedForeground }]}>
                 SECURE ENCRYPTED PROCESSING
               </Text>
@@ -245,7 +245,7 @@ export default function GiveScreen() {
 
         {activeTab === "Scheduled" && (
           <View style={styles.emptyState}>
-            <Feather name="clock" size={40} color={colors.mutedForeground} />
+            <HIcon name="clock" size={40} color={colors.mutedForeground} />
             <Text style={[styles.emptyTitle, { color: colors.foreground }]}>No Scheduled Gifts</Text>
             <Text style={[styles.emptyDesc, { color: colors.mutedForeground }]}>
               Set up recurring giving to automate your generosity.
@@ -255,7 +255,7 @@ export default function GiveScreen() {
 
         {activeTab === "History" && (
           <View style={styles.emptyState}>
-            <Feather name="list" size={40} color={colors.mutedForeground} />
+            <HIcon name="list" size={40} color={colors.mutedForeground} />
             <Text style={[styles.emptyTitle, { color: colors.foreground }]}>Giving History</Text>
             <Text style={[styles.emptyDesc, { color: colors.mutedForeground }]}>
               Your donation history will appear here.
@@ -280,7 +280,7 @@ export default function GiveScreen() {
             onPress={handleGive}
             activeOpacity={0.85}
           >
-            <Feather name="shield" size={18} color="#FFF" />
+            <HIcon name="shield" size={18} color="#FFF" />
             <Text style={styles.giveBtnText}>Give ${amount} Now</Text>
           </TouchableOpacity>
         </View>
@@ -291,7 +291,7 @@ export default function GiveScreen() {
         <View style={styles.modalOverlay}>
           <View style={[styles.successModal, { backgroundColor: colors.background }]}>
             <View style={[styles.successIcon, { backgroundColor: "#ECFDF5" }]}>
-              <Feather name="check-circle" size={40} color="#059669" />
+              <HIcon name="check-circle" size={40} color="#059669" />
             </View>
             <Text style={[styles.successTitle, { color: colors.foreground }]}>
               Thank You!

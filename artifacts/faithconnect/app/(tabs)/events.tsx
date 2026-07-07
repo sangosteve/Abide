@@ -1,4 +1,4 @@
-import { Feather } from "@expo/vector-icons";
+import { HIcon } from "@/components/HIcon";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -40,17 +40,17 @@ export default function EventsScreen() {
         <Text style={[styles.pageTitle, { color: colors.foreground }]}>Events</Text>
         <View style={styles.headerActions}>
           <TouchableOpacity style={[styles.iconBtn, { backgroundColor: colors.muted }]}>
-            <Feather name="calendar" size={20} color={colors.foreground} />
+            <HIcon name="calendar" size={20} color={colors.foreground} />
           </TouchableOpacity>
           <TouchableOpacity style={[styles.iconBtn, { backgroundColor: colors.muted }]}>
-            <Feather name="filter" size={20} color={colors.foreground} />
+            <HIcon name="filter" size={20} color={colors.foreground} />
           </TouchableOpacity>
         </View>
       </View>
 
       {/* Search Bar */}
       <View style={[styles.searchBar, { backgroundColor: colors.muted }]}>
-        <Feather name="search" size={16} color={colors.mutedForeground} />
+        <HIcon name="search" size={16} color={colors.mutedForeground} />
         <Text style={[styles.searchPlaceholder, { color: colors.mutedForeground }]}>
           Search events, workshops...
         </Text>
@@ -108,13 +108,13 @@ export default function EventsScreen() {
                   {event.title}
                 </Text>
                 <View style={styles.metaRow}>
-                  <Feather name="clock" size={12} color={colors.mutedForeground} />
+                  <HIcon name="clock" size={12} color={colors.mutedForeground} />
                   <Text style={[styles.metaText, { color: colors.mutedForeground }]}>
                     {event.time}
                   </Text>
                 </View>
                 <View style={styles.metaRow}>
-                  <Feather name="map-pin" size={12} color={colors.mutedForeground} />
+                  <HIcon name="map-pin" size={12} color={colors.mutedForeground} />
                   <Text style={[styles.metaText, { color: colors.mutedForeground }]}>
                     {event.venue}
                   </Text>
@@ -132,7 +132,7 @@ export default function EventsScreen() {
       {/* Footer */}
       <View style={styles.footer}>
         <View style={[styles.footerIcon, { backgroundColor: colors.muted }]}>
-          <Feather name="calendar" size={28} color={colors.mutedForeground} />
+          <HIcon name="calendar" size={28} color={colors.mutedForeground} />
         </View>
         <Text style={[styles.footerText, { color: colors.mutedForeground }]}>
           Checking for more events...

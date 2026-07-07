@@ -1,4 +1,4 @@
-import { Feather } from "@expo/vector-icons";
+import { HIcon } from "@/components/HIcon";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
@@ -106,13 +106,13 @@ export default function CommunityScreen() {
       <View style={[styles.composerActions, { borderColor: colors.border }]}>
         <View style={styles.composerIcons}>
           <TouchableOpacity style={styles.composerIconBtn}>
-            <Feather name="image" size={20} color={colors.mutedForeground} />
+            <HIcon name="image" size={20} color={colors.mutedForeground} />
           </TouchableOpacity>
           <TouchableOpacity style={styles.composerIconBtn}>
-            <Feather name="smile" size={20} color={colors.mutedForeground} />
+            <HIcon name="smile" size={20} color={colors.mutedForeground} />
           </TouchableOpacity>
           <TouchableOpacity style={styles.composerIconBtn}>
-            <Feather name="map-pin" size={20} color={colors.mutedForeground} />
+            <HIcon name="map-pin" size={20} color={colors.mutedForeground} />
           </TouchableOpacity>
         </View>
         <TouchableOpacity style={[styles.postBtn, { backgroundColor: colors.primary }]}>
@@ -149,7 +149,7 @@ export default function CommunityScreen() {
                 </Text>
               </View>
               <TouchableOpacity>
-                <Feather name="more-horizontal" size={18} color={colors.mutedForeground} />
+                <HIcon name="more-horizontal" size={18} color={colors.mutedForeground} />
               </TouchableOpacity>
             </View>
 
@@ -165,7 +165,7 @@ export default function CommunityScreen() {
                   style={styles.reactionBtn}
                   onPress={() => toggleLike(post.id)}
                 >
-                  <Feather
+                  <HIcon
                     name="heart"
                     size={16}
                     color={post.isLiked ? "#EF4444" : colors.mutedForeground}
@@ -175,14 +175,14 @@ export default function CommunityScreen() {
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.reactionBtn}>
-                  <Feather name="message-circle" size={16} color={colors.mutedForeground} />
+                  <HIcon name="message-circle" size={16} color={colors.mutedForeground} />
                   <Text style={[styles.reactionCount, { color: colors.mutedForeground }]}>
                     {post.comments}
                   </Text>
                 </TouchableOpacity>
               </View>
               <TouchableOpacity style={styles.shareBtn}>
-                <Feather name="share-2" size={16} color={colors.mutedForeground} />
+                <HIcon name="share" size={16} color={colors.mutedForeground} />
                 <Text style={[styles.shareText, { color: colors.mutedForeground }]}>Share</Text>
               </TouchableOpacity>
             </View>
@@ -195,7 +195,7 @@ export default function CommunityScreen() {
         style={[styles.fab, { backgroundColor: colors.primary }]}
         onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)}
       >
-        <Feather name="plus" size={24} color="#FFF" />
+        <HIcon name="plus" size={24} color="#FFF" />
       </TouchableOpacity>
     </ScrollView>
   );

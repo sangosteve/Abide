@@ -1,4 +1,4 @@
-import { Feather } from "@expo/vector-icons";
+import { HIcon } from "@/components/HIcon";
 import * as Haptics from "expo-haptics";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
@@ -60,15 +60,15 @@ export default function SermonDetailScreen() {
               style={[styles.backBtn, { backgroundColor: "rgba(0,0,0,0.35)" }]}
               onPress={() => router.back()}
             >
-              <Feather name="arrow-left" size={20} color="#FFF" />
+              <HIcon name="arrow-left" size={20} color="#FFF" />
             </TouchableOpacity>
             <Text style={styles.heroHeaderTitle}>Sermon Player</Text>
             <View style={styles.heroHeaderActions}>
               <TouchableOpacity style={[styles.backBtn, { backgroundColor: "rgba(0,0,0,0.35)" }]}>
-                <Feather name="share-2" size={18} color="#FFF" />
+                <HIcon name="share" size={18} color="#FFF" />
               </TouchableOpacity>
               <TouchableOpacity style={[styles.backBtn, { backgroundColor: "rgba(0,0,0,0.35)" }]}>
-                <Feather name="more-vertical" size={18} color="#FFF" />
+                <HIcon name="more-vertical" size={18} color="#FFF" />
               </TouchableOpacity>
             </View>
           </View>
@@ -82,10 +82,10 @@ export default function SermonDetailScreen() {
           {/* Title & Info */}
           <Text style={[styles.sermonTitle, { color: colors.foreground }]}>{sermon.title}</Text>
           <View style={styles.metaRow}>
-            <Feather name="user" size={14} color={colors.mutedForeground} />
+            <HIcon name="user" size={14} color={colors.mutedForeground} />
             <Text style={[styles.metaText, { color: colors.mutedForeground }]}>{sermon.speaker}</Text>
             <View style={[styles.dot, { backgroundColor: colors.border }]} />
-            <Feather name="calendar" size={14} color={colors.mutedForeground} />
+            <HIcon name="calendar" size={14} color={colors.mutedForeground} />
             <Text style={[styles.metaText, { color: colors.mutedForeground }]}>{sermon.date}</Text>
           </View>
 
@@ -111,25 +111,24 @@ export default function SermonDetailScreen() {
               style={styles.controlBtn}
               onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
             >
-              <Feather name="rotate-ccw" size={26} color={colors.foreground} />
+              <HIcon name="rotate-left" size={26} color={colors.foreground} />
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.playBtn, { backgroundColor: colors.primary }]}
               onPress={togglePlay}
               activeOpacity={0.85}
             >
-              <Feather
+              <HIcon
                 name={isPlaying ? "pause" : "play"}
                 size={30}
                 color="#FFF"
-                style={{ marginLeft: isPlaying ? 0 : 3 }}
               />
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.controlBtn}
               onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
             >
-              <Feather name="rotate-cw" size={26} color={colors.foreground} />
+              <HIcon name="rotate-right" size={26} color={colors.foreground} />
             </TouchableOpacity>
           </View>
 
@@ -147,7 +146,7 @@ export default function SermonDetailScreen() {
                 onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
                 activeOpacity={0.8}
               >
-                <Feather name={action.icon as any} size={22} color={colors.foreground} />
+                <HIcon name={action.icon as any} size={22} color={colors.foreground} />
                 <Text style={[styles.actionLabel, { color: colors.foreground }]}>{action.label}</Text>
               </TouchableOpacity>
             ))}
@@ -163,7 +162,7 @@ export default function SermonDetailScreen() {
 
           <View style={[styles.scriptureCard, { backgroundColor: "#EFF6FF", borderColor: "#BFDBFE" }]}>
             <View style={styles.scriptureRef}>
-              <Feather name="book-open" size={14} color={colors.primary} />
+              <HIcon name="book-open" size={14} color={colors.primary} />
               <Text style={[styles.scriptureRefText, { color: colors.primary }]}>
                 {sermon.scripture}
               </Text>

@@ -1,4 +1,4 @@
-import { Feather } from "@expo/vector-icons";
+import { HIcon } from "@/components/HIcon";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import React from "react";
@@ -46,7 +46,7 @@ export default function MoreScreen() {
           style={[styles.backBtn, { backgroundColor: colors.muted }]}
           onPress={() => router.back()}
         >
-          <Feather name="arrow-left" size={20} color={colors.foreground} />
+          <HIcon name="arrow-left" size={20} color={colors.foreground} />
         </TouchableOpacity>
         <Text style={[styles.pageTitle, { color: colors.foreground }]}>More</Text>
         <View style={{ width: 40 }} />
@@ -61,7 +61,7 @@ export default function MoreScreen() {
           <Text style={styles.profileSince}>Member since {userProfile.memberSince}</Text>
         </View>
         <TouchableOpacity style={styles.editBtn}>
-          <Feather name="edit-2" size={16} color="rgba(255,255,255,0.8)" />
+          <HIcon name="edit" size={16} color="rgba(255,255,255,0.8)" />
         </TouchableOpacity>
       </View>
 
@@ -92,10 +92,10 @@ export default function MoreScreen() {
             activeOpacity={0.7}
           >
             <View style={[styles.menuIconBox, { backgroundColor: `${item.color}18` }]}>
-              <Feather name={item.icon as any} size={18} color={item.color} />
+              <HIcon name={item.icon as any} size={18} color={item.color} />
             </View>
             <Text style={[styles.menuLabel, { color: colors.foreground }]}>{item.label}</Text>
-            <Feather name="chevron-right" size={16} color={colors.mutedForeground} />
+            <HIcon name="chevron-right" size={16} color={colors.mutedForeground} />
           </TouchableOpacity>
         ))}
       </View>
@@ -105,9 +105,9 @@ export default function MoreScreen() {
         style={[styles.mediaButton, { backgroundColor: "#EFF6FF", borderColor: "#BFDBFE" }]}
         onPress={() => router.push("/media")}
       >
-        <Feather name="image" size={18} color={colors.primary} />
+        <HIcon name="image" size={18} color={colors.primary} />
         <Text style={[styles.mediaButtonText, { color: colors.primary }]}>Media Gallery</Text>
-        <Feather name="arrow-right" size={16} color={colors.primary} />
+        <HIcon name="arrow-right" size={16} color={colors.primary} />
       </TouchableOpacity>
 
       {/* Logout */}
@@ -118,7 +118,7 @@ export default function MoreScreen() {
           router.replace("/");
         }}
       >
-        <Feather name="log-out" size={18} color="#EF4444" />
+        <HIcon name="logout" size={18} color="#EF4444" />
         <Text style={styles.logoutText}>Log Out</Text>
       </TouchableOpacity>
 

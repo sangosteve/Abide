@@ -1,4 +1,4 @@
-import { Feather } from "@expo/vector-icons";
+import { HIcon } from "@/components/HIcon";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -36,11 +36,11 @@ export default function MediaScreen() {
           style={[styles.backBtn, { backgroundColor: colors.muted }]}
           onPress={() => router.back()}
         >
-          <Feather name="arrow-left" size={20} color={colors.foreground} />
+          <HIcon name="arrow-left" size={20} color={colors.foreground} />
         </TouchableOpacity>
         <Text style={[styles.pageTitle, { color: colors.foreground }]}>Media Gallery</Text>
         <TouchableOpacity style={[styles.iconBtn, { backgroundColor: colors.muted }]}>
-          <Feather name="more-vertical" size={20} color={colors.foreground} />
+          <HIcon name="more-vertical" size={20} color={colors.foreground} />
         </TouchableOpacity>
       </View>
 
@@ -112,7 +112,7 @@ export default function MediaScreen() {
             <Image source={{ uri: video.thumbnail }} style={styles.videoThumb} resizeMode="cover" />
             <View style={styles.videoOverlay} />
             <View style={styles.playIconBg}>
-              <Feather name="play" size={18} color="#FFF" />
+              <HIcon name="play" size={18} color="#FFF" />
             </View>
             <View style={styles.videoDurationBadge}>
               <Text style={styles.videoDurationText}>{video.duration}</Text>
@@ -167,7 +167,7 @@ export default function MediaScreen() {
             activeOpacity={0.85}
           >
             <View style={[styles.albumIconBox, { backgroundColor: "#EFF6FF" }]}>
-              <Feather name="image" size={18} color={colors.primary} />
+              <HIcon name="image" size={18} color={colors.primary} />
             </View>
             <View style={styles.albumInfo}>
               <Text style={[styles.albumTitle, { color: colors.foreground }]}>{album.title}</Text>
@@ -175,7 +175,7 @@ export default function MediaScreen() {
                 Updated {album.updatedAt}
               </Text>
             </View>
-            <Feather name="chevron-right" size={18} color={colors.mutedForeground} />
+            <HIcon name="chevron-right" size={18} color={colors.mutedForeground} />
           </TouchableOpacity>
         ))}
       </View>

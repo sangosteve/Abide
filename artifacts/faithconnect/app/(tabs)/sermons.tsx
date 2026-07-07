@@ -1,4 +1,4 @@
-import { Feather } from "@expo/vector-icons";
+import { HIcon } from "@/components/HIcon";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -34,7 +34,7 @@ export default function SermonsScreen() {
       <View style={[styles.header, { paddingTop: topPadding }]}>
         <Text style={[styles.pageTitle, { color: colors.foreground }]}>Sermons</Text>
         <TouchableOpacity style={[styles.iconBtn, { backgroundColor: colors.muted }]}>
-          <Feather name="search" size={20} color={colors.foreground} />
+          <HIcon name="search" size={20} color={colors.foreground} />
         </TouchableOpacity>
       </View>
 
@@ -115,7 +115,7 @@ export default function SermonsScreen() {
               {sermon.title}
             </Text>
             <View style={styles.sermonMeta}>
-              <Feather name="user" size={12} color={colors.mutedForeground} />
+              <HIcon name="user" size={12} color={colors.mutedForeground} />
               <Text style={[styles.sermonMetaText, { color: colors.mutedForeground }]}>
                 {sermon.speaker}
               </Text>
@@ -133,10 +133,10 @@ export default function SermonsScreen() {
           </View>
           <View style={styles.sermonActions}>
             <TouchableOpacity style={styles.sermonActionBtn}>
-              <Feather name="download" size={18} color={colors.mutedForeground} />
+              <HIcon name="download" size={18} color={colors.mutedForeground} />
             </TouchableOpacity>
             <TouchableOpacity style={styles.sermonActionBtn}>
-              <Feather name="more-vertical" size={18} color={colors.mutedForeground} />
+              <HIcon name="more-vertical" size={18} color={colors.mutedForeground} />
             </TouchableOpacity>
           </View>
         </TouchableOpacity>
@@ -145,7 +145,7 @@ export default function SermonsScreen() {
       {/* Bible Study CTA */}
       <View style={[styles.biblebanner, { backgroundColor: colors.card, borderColor: colors.border }]}>
         <View style={[styles.bibleIcon, { backgroundColor: "#EFF6FF" }]}>
-          <Feather name="book-open" size={24} color={colors.primary} />
+          <HIcon name="book-open" size={24} color={colors.primary} />
         </View>
         <Text style={[styles.bibleTitle, { color: colors.foreground }]}>
           Dig Deeper Into The Word
@@ -153,7 +153,7 @@ export default function SermonsScreen() {
         <Text style={[styles.bibleDesc, { color: colors.mutedForeground }]}>
           Access study notes and scripture references for every sermon to enrich your personal study time.
         </Text>
-        <TouchableOpacity style={styles.bibleCTA}>
+        <TouchableOpacity style={styles.bibleCTA} onPress={() => router.push("/bible-study")}>
           <Text style={[styles.bibleCTAText, { color: colors.primary }]}>Open Bible Study</Text>
         </TouchableOpacity>
       </View>

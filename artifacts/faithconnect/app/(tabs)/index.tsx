@@ -1,4 +1,4 @@
-import { Feather } from "@expo/vector-icons";
+import { HIcon } from "@/components/HIcon";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
@@ -35,7 +35,7 @@ export default function HomeScreen() {
       <View style={[styles.header, { paddingTop: topPadding }]}>
         <View style={styles.headerLeft}>
           <View style={[styles.logoMark, { backgroundColor: colors.primary }]}>
-            <Feather name="zap" size={14} color="#FFF" />
+            <HIcon name="zap" size={14} color="#FFF" />
           </View>
           <Text style={[styles.appTitle, { color: colors.foreground }]}>FaithConnect</Text>
         </View>
@@ -43,7 +43,7 @@ export default function HomeScreen() {
           style={[styles.notifBtn, { backgroundColor: colors.muted }]}
           onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
         >
-          <Feather name="bell" size={20} color={colors.foreground} />
+          <HIcon name="bell" size={20} color={colors.foreground} />
           <View style={[styles.notifDot, { backgroundColor: colors.destructive }]} />
         </TouchableOpacity>
       </View>
@@ -92,7 +92,7 @@ export default function HomeScreen() {
           </View>
         </View>
         <View style={styles.featuredPlayBtn}>
-          <Feather name="play-circle" size={44} color="rgba(255,255,255,0.9)" />
+          <HIcon name="play-circle" size={44} color="rgba(255,255,255,0.9)" />
         </View>
         <View style={styles.featuredContent}>
           <Text style={styles.featuredTitle} numberOfLines={2}>
@@ -116,7 +116,7 @@ export default function HomeScreen() {
             activeOpacity={0.8}
           >
             <View style={[styles.quickActionIcon, { backgroundColor: colors.muted }]}>
-              <Feather
+              <HIcon
                 name={action.icon as any}
                 size={20}
                 color={colors.primary}
@@ -133,7 +133,7 @@ export default function HomeScreen() {
       <View style={[styles.verseCard, { backgroundColor: "#EFF6FF" }]}>
         <View style={styles.verseHeader}>
           <View style={[styles.verseIcon, { backgroundColor: colors.primary }]}>
-            <Feather name="book-open" size={12} color="#FFF" />
+            <HIcon name="book-open" size={12} color="#FFF" />
           </View>
           <Text style={[styles.verseLabel, { color: colors.primary }]}>VERSE OF THE DAY</Text>
         </View>
@@ -148,7 +148,7 @@ export default function HomeScreen() {
             <TouchableOpacity
               onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
             >
-              <Feather name="share-2" size={18} color={colors.mutedForeground} />
+              <HIcon name="share" size={18} color={colors.mutedForeground} />
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => {
@@ -156,7 +156,7 @@ export default function HomeScreen() {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
               }}
             >
-              <Feather
+              <HIcon
                 name="heart"
                 size={18}
                 color={verseHearted ? colors.destructive : colors.mutedForeground}
@@ -190,19 +190,19 @@ export default function HomeScreen() {
               {event.title}
             </Text>
             <View style={styles.eventMeta}>
-              <Feather name="clock" size={12} color={colors.mutedForeground} />
+              <HIcon name="clock" size={12} color={colors.mutedForeground} />
               <Text style={[styles.eventMetaText, { color: colors.mutedForeground }]}>
                 {event.time}
               </Text>
             </View>
             <View style={styles.eventMeta}>
-              <Feather name="map-pin" size={12} color={colors.mutedForeground} />
+              <HIcon name="map-pin" size={12} color={colors.mutedForeground} />
               <Text style={[styles.eventMetaText, { color: colors.mutedForeground }]}>
                 {event.venue}
               </Text>
             </View>
           </View>
-          <Feather name="chevron-right" size={18} color={colors.mutedForeground} />
+          <HIcon name="chevron-right" size={18} color={colors.mutedForeground} />
         </TouchableOpacity>
       ))}
     </ScrollView>

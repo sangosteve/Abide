@@ -1,4 +1,4 @@
-import { Feather } from "@expo/vector-icons";
+import { HIcon } from "@/components/HIcon";
 import * as Haptics from "expo-haptics";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React from "react";
@@ -41,12 +41,12 @@ export default function EventDetailScreen() {
             style={[styles.backBtn, { top: topPadding + 12, backgroundColor: "rgba(0,0,0,0.4)" }]}
             onPress={() => router.back()}
           >
-            <Feather name="arrow-left" size={20} color="#FFF" />
+            <HIcon name="arrow-left" size={20} color="#FFF" />
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.shareBtn, { top: topPadding + 12, backgroundColor: "rgba(0,0,0,0.4)" }]}
           >
-            <Feather name="share-2" size={18} color="#FFF" />
+            <HIcon name="share" size={18} color="#FFF" />
           </TouchableOpacity>
           <View style={styles.heroContent}>
             <View style={[styles.catBadge, { backgroundColor: categoryColor }]}>
@@ -61,7 +61,7 @@ export default function EventDetailScreen() {
           {/* Date */}
           <View style={[styles.infoRow, { borderBottomColor: colors.border }]}>
             <View style={[styles.infoIcon, { backgroundColor: "#EFF6FF" }]}>
-              <Feather name="calendar" size={18} color={colors.primary} />
+              <HIcon name="calendar" size={18} color={colors.primary} />
             </View>
             <View style={styles.infoText}>
               <Text style={[styles.infoLabel, { color: colors.mutedForeground }]}>DATE</Text>
@@ -71,7 +71,7 @@ export default function EventDetailScreen() {
           {/* Time */}
           <View style={[styles.infoRow, { borderBottomColor: colors.border }]}>
             <View style={[styles.infoIcon, { backgroundColor: "#EFF6FF" }]}>
-              <Feather name="clock" size={18} color={colors.primary} />
+              <HIcon name="clock" size={18} color={colors.primary} />
             </View>
             <View style={styles.infoText}>
               <Text style={[styles.infoLabel, { color: colors.mutedForeground }]}>TIME</Text>
@@ -81,7 +81,7 @@ export default function EventDetailScreen() {
           {/* Venue */}
           <View style={[styles.infoRow, { borderBottomColor: "transparent" }]}>
             <View style={[styles.infoIcon, { backgroundColor: "#EFF6FF" }]}>
-              <Feather name="map-pin" size={18} color={colors.primary} />
+              <HIcon name="map-pin" size={18} color={colors.primary} />
             </View>
             <View style={styles.infoText}>
               <Text style={[styles.infoLabel, { color: colors.mutedForeground }]}>VENUE</Text>
@@ -96,7 +96,7 @@ export default function EventDetailScreen() {
         {/* Speaker */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Feather name="user" size={18} color={colors.primary} />
+            <HIcon name="user" size={18} color={colors.primary} />
             <Text style={[styles.sectionTitle, { color: colors.foreground }]}>Guest Speakers</Text>
           </View>
           <View style={[styles.speakerCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
@@ -116,7 +116,7 @@ export default function EventDetailScreen() {
         {/* About */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Feather name="info" size={18} color={colors.primary} />
+            <HIcon name="info" size={18} color={colors.primary} />
             <Text style={[styles.sectionTitle, { color: colors.foreground }]}>About the Event</Text>
           </View>
           <Text style={[styles.descText, { color: colors.foreground }]}>{event.description}</Text>
@@ -127,7 +127,7 @@ export default function EventDetailScreen() {
               { icon: "check-circle", title: "Refreshments", desc: "Light snacks and coffee served after service." },
             ].map((item) => (
               <View key={item.title} style={styles.featureRow}>
-                <Feather name={item.icon as any} size={16} color={colors.success} />
+                <HIcon name={item.icon as any} size={16} color={colors.success} />
                 <View style={styles.featureText}>
                   <Text style={[styles.featureTitle, { color: colors.foreground }]}>{item.title}</Text>
                   <Text style={[styles.featureDesc, { color: colors.mutedForeground }]}>{item.desc}</Text>
