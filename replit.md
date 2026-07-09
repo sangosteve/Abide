@@ -22,7 +22,13 @@ A church-focused mobile app that helps congregations stay connected through serm
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- Mobile app: `artifacts/faithconnect/` (`@workspace/faithconnect`)
+- Admin dashboard: `artifacts/admin/` (`@workspace/admin`) — React+Vite, mock data, dark navy/purple theme
+- API server: `artifacts/api-server/` (`@workspace/api-server`)
+- Shared packages: `packages/` (db, api-spec, api-client-react, api-zod)
+- DB schema: `packages/db/src/schema/index.ts`
+- API contract: `packages/api-spec/openapi.yaml`
+- Admin mock data: `artifacts/admin/src/data/`
 
 ## Architecture decisions
 

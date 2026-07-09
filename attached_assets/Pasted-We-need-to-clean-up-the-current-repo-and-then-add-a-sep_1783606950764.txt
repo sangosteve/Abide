@@ -1,0 +1,741 @@
+We need to clean up the current repo and then add a separate React web admin dashboard.
+
+Important context:
+
+The current repo is a monorepo and contains multiple workspace projects. During local setup we confirmed that the actual working mobile app is:
+
+artifacts/faithconnect
+
+That is the correct Expo React Native app and it is the app we must keep.
+
+The root repo currently has multiple folders such as:
+
+artifacts/api-server
+artifacts/faithconnect
+artifacts/mockup-sandbox
+lib/api-client-react
+lib/api-spec
+lib/api-zod
+lib/db
+scripts
+
+For this task, clean up the repo so that we keep the real mobile app and add a separate React admin web app.
+
+1. Repo Cleanup Requirement
+
+Clean up the repository so it is easier to understand and run locally.
+
+The main app that must remain is:
+
+artifacts/faithconnect
+
+This is the Expo React Native mobile app.
+
+Please review the repo structure and remove or isolate unnecessary generated/demo/sandbox artifacts that are not required for the actual product.
+
+Specifically:
+
+Keep artifacts/faithconnect as the mobile app.
+Do not delete the working mobile app.
+Do not break its dependencies.
+Remove or archive unused mockup/sandbox/demo apps if they are not required.
+Keep shared libraries only if the mobile app or future admin app actually depends on them.
+Update the workspace configuration if any removed packages are referenced.
+Update package scripts so the project can be run easily.
+Remove unused dependencies where safe.
+Ensure pnpm install works after cleanup.
+Ensure the mobile app still runs locally.
+
+The desired cleaned structure should be simple and understandable.
+
+A recommended structure is:
+
+/
+  apps/
+    mobile/
+    admin/
+  packages/
+    shared/
+  package.json
+  pnpm-workspace.yaml
+  README.md
+
+You may move:
+
+artifacts/faithconnect
+
+to:
+
+apps/mobile
+
+but only if you update paths, imports, workspace references, and scripts properly.
+
+If moving the app risks breaking things, keep it where it is and just clean around it.
+
+The final repo should clearly separate:
+
+Mobile app
+Admin web app
+Shared packages/utilities
+Documentation
+2. Mobile App Requirement
+
+The existing mobile app must continue to run.
+
+It is currently an Expo React Native app.
+
+Please make sure we can run it locally with a clear script such as:
+
+pnpm mobile
+
+or:
+
+pnpm --filter mobile start
+
+or:
+
+cd apps/mobile
+pnpm exec expo start
+
+Add whichever scripts make the most sense.
+
+Important: the previous dev command was written for Replit and used Replit-specific environment variables like:
+
+REPLIT_EXPO_DEV_DOMAIN
+REPLIT_DEV_DOMAIN
+REPL_ID
+PORT
+
+Please add a proper local start command that does not depend on Replit-specific variables.
+
+Example:
+
+"start": "expo start",
+"start:clear": "expo start -c",
+"start:tunnel": "expo start --tunnel"
+3. Create Separate Admin Dashboard Web App
+
+Create a separate React web app for the admin dashboard.
+
+Important:
+
+Use React, not Next.js.
+Use Vite + React + TypeScript.
+Use React Router.
+Use Tailwind CSS or clean CSS modules.
+Use reusable components.
+Use mock data for now.
+No backend integration is required yet.
+The admin app should be separate from the mobile app.
+The admin app should be run independently.
+
+Recommended location:
+
+apps/admin
+
+The admin dashboard should be built as a desktop-first web application.
+
+4. Admin Dashboard Design Direction
+
+I will attach reference images for the admin dashboard screens. Use those images as the primary visual reference.
+
+The admin dashboard should match the reference style:
+
+dark navy background
+purple accent color
+card-based layout
+modern sidebar navigation
+top header
+dashboard cards
+tables
+filters
+action buttons
+polished SaaS-style admin UI
+clean spacing
+rounded corners
+soft borders
+professional typography
+serious church-platform feel
+
+The admin dashboard should feel like a premium SaaS admin panel for a church engagement platform called Abide.
+
+Use this branding:
+
+Abide Admin
+5. Admin Dashboard Pages to Build
+
+Create the following admin web pages.
+
+A. Dashboard
+
+Route:
+
+/dashboard
+
+Include:
+
+summary metric cards
+total users
+active Bible studies
+upcoming events
+prayer requests
+discussions
+recent users
+active Bible studies table
+recent prayer requests
+engagement overview
+system health placeholder
+
+Use mock data.
+
+B. Users List Page
+
+Route:
+
+/users
+
+Include:
+
+user/member summary cards
+search bar
+filters:
+role
+group/ministry
+status
+table of users
+user role
+group/ministry
+status
+joined date
+recent signups panel
+member segments panel
+Add User button
+
+Clicking Add User should open the Create User page.
+
+C. Create User Page
+
+Route:
+
+/users/create
+
+Include a proper user creation form.
+
+Sections:
+
+Personal Information
+first name
+last name
+email
+phone number
+profile photo upload placeholder
+notes
+Church Assignment
+ministry/group
+additional groups
+campus/location
+member since date
+Account Access
+access type:
+send invite
+set password
+role
+status active/inactive
+Quick Actions
+send welcome email
+add to communication list
+add to member directory
+Role Summary Panel
+
+Show role permissions preview, such as:
+
+manage group
+view member directory
+create/edit events
+moderate discussions
+
+Actions:
+
+Send Invite
+Save Draft
+Create User
+
+Use mock form handling.
+
+D. Bible Studies List Page
+
+Route:
+
+/bible-studies
+
+Include:
+
+summary cards:
+active series
+draft lessons
+published sessions
+completion rate
+table/list of Bible study series
+leader
+number of sessions
+participants
+progress
+status
+selected study preview panel
+Generate Study Guide button
+Add Lesson button
+New Series button
+
+Clicking New Series should open the Create Bible Study page.
+
+E. Create Bible Study Page
+
+Route:
+
+/bible-studies/create
+
+This is one of the most important admin screens.
+
+Include a form for creating a Bible Study series.
+
+Sections:
+
+Study Information
+study title
+series name
+teacher/leader
+study type:
+By Book
+By Topic
+description
+tags
+Schedule and Settings
+start date
+end date
+lesson count
+visibility:
+public
+members only
+group only
+status:
+draft
+published
+Cover Image
+image upload placeholder
+Lesson Builder
+
+Add and manage lessons.
+
+Each lesson should include:
+
+lesson title
+scripture reference
+estimated duration
+status
+actions
+
+Allow a mock “Add Lesson” action.
+
+Study Preview Panel
+
+Show:
+
+cover image
+title
+teacher
+date range
+lesson count
+visibility
+description
+topics
+scripture focus
+what’s included:
+in-depth lessons
+leader notes
+discussion questions
+memory verses
+study guide PDF placeholder
+
+Actions:
+
+Generate Study Guide
+Save Draft
+Publish Study
+
+For now, AI generation can be mocked.
+
+F. Sermons List Page
+
+Route:
+
+/sermons
+
+Include:
+
+sermon summary cards
+search and filters
+sermons table/list
+title
+speaker
+series
+scripture
+date
+media status
+publish status
+views/listens
+New Sermon button
+
+Clicking New Sermon should open the Create Sermon page.
+
+G. Create Sermon Page
+
+Route:
+
+/sermons/create
+
+Include a form for uploading and creating a sermon.
+
+Sections:
+
+Sermon Information
+sermon title
+speaker
+series
+date
+scripture reference
+duration
+summary
+tags/topics
+Media Upload
+video upload placeholder
+audio upload placeholder
+thumbnail upload placeholder
+Additional Settings
+visibility
+publish status
+notes
+feature on homepage checkbox
+send notification to members checkbox
+Sermon Preview Panel
+
+Show:
+
+thumbnail
+title
+speaker
+date
+duration
+scripture
+series
+topics
+media files
+
+Actions:
+
+Save Draft
+Schedule
+Publish Sermon
+
+No actual media upload backend is required yet; use UI placeholders.
+
+H. Events List Page
+
+Route:
+
+/events
+
+Include:
+
+event summary cards
+upcoming events
+registrations
+this month
+check-ins
+list/calendar toggle
+event table
+calendar mini view
+event insights card
+filters
+export button
+Create Event button
+
+Clicking Create Event should open the Create Event page.
+
+I. Create Event Page
+
+Route:
+
+/events/create
+
+Include a full event creation form.
+
+Sections:
+
+Event Information
+event title
+category
+host/ministry
+date
+time
+recurrence
+location/venue
+address
+online event checkbox
+description
+Registration Settings
+capacity
+RSVP/ticket type
+registration required toggle
+allow waitlist when full
+Event Details
+banner image upload placeholder
+speakers/guests list
+add speaker/guest button
+Publish Settings
+visibility
+publish status
+send reminders checkbox
+reminder time
+Event Preview Panel
+
+Show:
+
+banner image
+title
+date
+time
+venue
+registration status
+description
+Register Now preview button
+event checklist
+
+Actions:
+
+Save Draft
+Preview
+Publish Event
+J. Discussions Page
+
+Route:
+
+/discussions
+
+Include:
+
+summary cards:
+active threads
+pending reviews
+reported posts
+engagement rate
+tabs:
+all discussions
+prayer requests
+groups
+flagged
+search
+filters
+discussion table
+author
+group
+replies
+reports
+sentiment
+status
+actions
+flagged content summary
+community health panel
+6. Sidebar Navigation
+
+The admin app should have a persistent sidebar with:
+
+Dashboard
+Users
+Bible Studies
+Sermons
+Events
+Groups
+Prayer Requests
+Discussions
+Resources
+Notifications
+Analytics
+Reports
+Settings
+
+For this build, only the following pages need to be functional:
+
+Dashboard
+Users
+Create User
+Bible Studies
+Create Bible Study
+Sermons
+Create Sermon
+Events
+Create Event
+Discussions
+
+Other sidebar links can be placeholders.
+
+7. Component Requirements
+
+Create reusable components for the admin app, such as:
+
+AdminLayout
+Sidebar
+Topbar
+MetricCard
+DataTable
+StatusBadge
+PrimaryButton
+SecondaryButton
+IconButton
+SearchInput
+FilterDropdown
+FormCard
+FormSection
+TextInput
+TextArea
+SelectInput
+DateInput
+ToggleSwitch
+UploadCard
+PreviewPanel
+ProgressBar
+EmptyState
+
+Avoid duplicating large UI blocks.
+
+8. Mock Data
+
+Use realistic mock data for:
+
+users
+Bible study series
+lessons
+sermons
+events
+groups
+prayer requests
+discussions
+metrics
+notifications
+recent activity
+
+The mock data should match a church context.
+
+Example Bible Studies:
+
+The Wisdom of Proverbs
+The Gospel of John
+Romans: Grace & Faith
+Psalms: Songs of Praise
+Acts: The Early Church
+
+Example Sermons:
+
+Walk by Faith, Not by Sight
+Faith That Overcomes
+The Power of Prayer
+Guard Your Heart
+Abide in Me
+
+Example Events:
+
+Youth Worship Night
+Baptism Sunday
+Community Outreach
+Women’s Conference
+Men’s Breakfast
+9. Scripts and Local Running
+
+Update the root scripts so we can run both apps clearly.
+
+Recommended root scripts:
+
+{
+  "scripts": {
+    "mobile": "pnpm --filter mobile start",
+    "mobile:clear": "pnpm --filter mobile start:clear",
+    "mobile:tunnel": "pnpm --filter mobile start:tunnel",
+    "admin": "pnpm --filter admin dev",
+    "build": "pnpm -r --if-present build",
+    "typecheck": "pnpm -r --if-present typecheck"
+  }
+}
+
+Adjust package names as needed.
+
+The admin app should run with:
+
+pnpm admin
+
+or:
+
+cd apps/admin
+pnpm dev
+
+The mobile app should run with:
+
+pnpm mobile
+
+or:
+
+cd apps/mobile
+pnpm start
+
+Document this in README.
+
+10. README Update
+
+Update the README with:
+
+project overview
+repo structure
+prerequisites
+install command
+how to run mobile app
+how to run admin dashboard
+how to run typecheck
+notes about mock data
+notes about future backend integration
+11. Important Build Constraints
+
+Please follow these constraints:
+
+Do not use Next.js.
+Use React + Vite for the admin dashboard.
+Use TypeScript.
+Keep the Expo mobile app working.
+Do not remove required packages without checking imports.
+Do not break pnpm workspace.
+Use mock data only for now.
+No real authentication required yet.
+No real file upload required yet.
+No real payment integration required yet.
+No backend integration required yet.
+Prioritize clean structure and UI fidelity.
+Final Goal
+
+The final result should be a cleaned-up repo containing:
+
+The existing Expo React Native mobile app.
+A separate React/Vite admin dashboard web app.
+Clean pnpm workspace setup.
+Clear local run scripts.
+Admin dashboard pages for:
+Dashboard
+Users
+Create User
+Bible Studies
+Create Bible Study
+Sermons
+Create Sermon
+Events
+Create Event
+Discussions
+A polished dark SaaS-style admin UI based on the attached reference images.
+Clear README instructions.
+
+The app is called Abide, so use Abide Admin for the dashboard branding.
