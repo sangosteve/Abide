@@ -13,7 +13,9 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useColors } from "@/hooks/useColors";
-import { sermons, featuredSeries } from "@/constants/mockData";
+import { useQuery } from "@tanstack/react-query";
+import { fetchSermons, fetchFeaturedSeries } from "@/services/api";
+import { ActivityIndicator } from "react-native";
 
 const filterTabs = ["All", "Series", "Topics", "Speakers"];
 
@@ -22,6 +24,10 @@ export default function SermonsScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const [activeFilter, setActiveFilter] = useState("All");
+  
+  const { data: sermons = [], isLoading: isLoadingSermons } = useQuery({ queryKey: ["sermons"], queryFn: fetchSermons });
+  const { data: featuredSeries, isLoading: isLoadingSeries } = useQuery({ queryKey: ["featured-series"], queryFn: fetchFeaturedSeries });
+
   const topPadding = Platform.OS === "web" ? 80 : insets.top + 16;
 
   return (
@@ -68,26 +74,30 @@ export default function SermonsScreen() {
       </ScrollView>
 
       {/* Current Series Card */}
-      <TouchableOpacity style={styles.seriesCard} activeOpacity={0.9}>
-        <Image
-          source={{ uri: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800" }}
-          style={styles.seriesImage}
-          resizeMode="cover"
-        />
-        <View style={styles.seriesOverlay} />
-        <View style={styles.seriesBadge}>
-          <Text style={styles.seriesBadgeText}>CURRENT SERIES</Text>
-        </View>
-        <View style={styles.seriesPartsTag}>
-          <Text style={styles.seriesPartsText}>{featuredSeries.parts} Parts</Text>
-        </View>
-        <View style={styles.seriesContent}>
-          <Text style={styles.seriesTitle}>{featuredSeries.title}</Text>
-          <Text style={styles.seriesDesc} numberOfLines={2}>
-            {featuredSeries.description}
-          </Text>
-        </View>
-      </TouchableOpacity>
+      {isLoadingSeries ? (
+        <ActivityIndicator color={colors.primary} style={{ marginVertical: 20 }} />
+      ) : featuredSeries ? (
+        <TouchableOpacity style={styles.seriesCard} activeOpacity={0.9}>
+          <Image
+            source={{ uri: featuredSeries.thumbnail || "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800" }}
+            style={styles.seriesImage}
+            resizeMode="cover"
+          />
+          <View style={styles.seriesOverlay} />
+          <View style={styles.seriesBadge}>
+            <Text style={styles.seriesBadgeText}>CURRENT SERIES</Text>
+          </View>
+          <View style={styles.seriesPartsTag}>
+            <Text style={styles.seriesPartsText}>{featuredSeries.parts} Parts</Text>
+          </View>
+          <View style={styles.seriesContent}>
+            <Text style={styles.seriesTitle}>{featuredSeries.title}</Text>
+            <Text style={styles.seriesDesc} numberOfLines={2}>
+              {featuredSeries.description}
+            </Text>
+          </View>
+        </TouchableOpacity>
+      ) : null}
 
       {/* Recent Sermons */}
       <View style={styles.sectionHeader}>
@@ -97,50 +107,56 @@ export default function SermonsScreen() {
         </TouchableOpacity>
       </View>
 
-      {sermons.map((sermon) => (
-        <TouchableOpacity
-          key={sermon.id}
-          style={[styles.sermonItem, { borderBottomColor: colors.border }]}
-          onPress={() => router.push(`/sermon/${sermon.id}`)}
-          activeOpacity={0.8}
-        >
-          <View style={styles.sermonThumbContainer}>
-            <Image source={{ uri: sermon.thumbnail }} style={styles.sermonThumb} />
-            <View style={styles.durationBadge}>
-              <Text style={styles.durationText}>{sermon.duration}</Text>
-            </View>
-          </View>
-          <View style={styles.sermonInfo}>
-            <Text style={[styles.sermonTitle, { color: colors.foreground }]} numberOfLines={2}>
-              {sermon.title}
-            </Text>
-            <View style={styles.sermonMeta}>
-              <HIcon name="user" size={12} color={colors.mutedForeground} />
-              <Text style={[styles.sermonMetaText, { color: colors.mutedForeground }]}>
-                {sermon.speaker}
-              </Text>
-            </View>
-            <View style={styles.sermonBottom}>
-              <Text style={[styles.sermonDate, { color: colors.mutedForeground }]}>
-                {sermon.date}
-              </Text>
-              <View style={[styles.scriptureTag, { backgroundColor: "#EFF6FF" }]}>
-                <Text style={[styles.scriptureTagText, { color: colors.primary }]}>
-                  {sermon.scripture}
-                </Text>
+      {isLoadingSermons ? (
+        <ActivityIndicator color={colors.primary} style={{ marginVertical: 20 }} />
+      ) : (
+        sermons.map((sermon) => (
+          <TouchableOpacity
+            key={sermon.id}
+            style={[styles.sermonItem, { borderBottomColor: colors.border }]}
+            onPress={() => router.push(`/sermon/${sermon.id}`)}
+            activeOpacity={0.8}
+          >
+            <View style={styles.sermonThumbContainer}>
+              <Image source={{ uri: sermon.thumbnail }} style={styles.sermonThumb} />
+              <View style={styles.durationBadge}>
+                <Text style={styles.durationText}>{sermon.duration}</Text>
               </View>
             </View>
-          </View>
-          <View style={styles.sermonActions}>
-            <TouchableOpacity style={styles.sermonActionBtn}>
-              <HIcon name="download" size={18} color={colors.mutedForeground} />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.sermonActionBtn}>
-              <HIcon name="more-vertical" size={18} color={colors.mutedForeground} />
-            </TouchableOpacity>
-          </View>
-        </TouchableOpacity>
-      ))}
+            <View style={styles.sermonInfo}>
+              <Text style={[styles.sermonTitle, { color: colors.foreground }]} numberOfLines={2}>
+                {sermon.title}
+              </Text>
+              <View style={styles.sermonMeta}>
+                <HIcon name="user" size={12} color={colors.mutedForeground} />
+                <Text style={[styles.sermonMetaText, { color: colors.mutedForeground }]}>
+                  {sermon.speaker}
+                </Text>
+              </View>
+              <View style={styles.sermonBottom}>
+                <Text style={[styles.sermonDate, { color: colors.mutedForeground }]}>
+                  {sermon.date}
+                </Text>
+                {sermon.scripture ? (
+                  <View style={[styles.scriptureTag, { backgroundColor: "#EFF6FF" }]}>
+                    <Text style={[styles.scriptureTagText, { color: colors.primary }]}>
+                      {sermon.scripture}
+                    </Text>
+                  </View>
+                ) : null}
+              </View>
+            </View>
+            <View style={styles.sermonActions}>
+              <TouchableOpacity style={styles.sermonActionBtn}>
+                <HIcon name="download" size={18} color={colors.mutedForeground} />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.sermonActionBtn}>
+                <HIcon name="more-vertical" size={18} color={colors.mutedForeground} />
+              </TouchableOpacity>
+            </View>
+          </TouchableOpacity>
+        ))
+      )}
 
       {/* Bible Study CTA */}
       <View style={[styles.biblebanner, { backgroundColor: colors.card, borderColor: colors.border }]}>

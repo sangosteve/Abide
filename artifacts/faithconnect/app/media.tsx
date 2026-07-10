@@ -13,7 +13,24 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useColors } from "@/hooks/useColors";
-import { mediaAlbums, recentVideos, photoMemories } from "@/constants/mockData";
+
+const mediaAlbums = [
+  { id: "1", title: "Missions 2023", updatedAt: "2 days ago", coverImage: "https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?w=400" },
+  { id: "2", title: "Youth Camp", updatedAt: "2 days ago", coverImage: "https://images.unsplash.com/photo-1478145046317-39f10e56b5e9?w=400" },
+  { id: "3", title: "Easter Service", updatedAt: "2 days ago", coverImage: "https://images.unsplash.com/photo-1555685812-4b943f1cb0eb?w=400" },
+];
+
+const recentVideos = [
+  { id: "1", title: "Sunday Morning Worship: Finding Peace", date: "Mar 22, 2024", duration: "45:30", thumbnail: "https://images.unsplash.com/photo-1429514513361-8a632ff5f2ba?w=400" },
+  { id: "2", title: "Mid-week Prayer & Strength", date: "Mar 18, 2024", duration: "28:15", thumbnail: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400" },
+];
+
+const photoMemories = [
+  { id: "1", title: "Community Picnic", date: "MAY 2023", image: "https://images.unsplash.com/photo-1528605105345-5344ea20e269?w=400", isFeature: true },
+  { id: "2", title: "Small Group Study", date: "APR 2023", image: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=400" },
+  { id: "3", title: "Volunteer Day", date: "MAR 2023", image: "https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?w=400" },
+  { id: "4", title: "Worship Night", date: "MAR 2023", image: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=400" },
+];
 
 const tabs = ["All", "Photos", "Videos", "Albums"];
 

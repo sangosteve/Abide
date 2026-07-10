@@ -14,7 +14,9 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useColors } from "@/hooks/useColors";
-import { upcomingEvents } from "@/constants/mockData";
+import { useQuery } from "@tanstack/react-query";
+import { fetchEvent } from "@/services/api";
+import { ActivityIndicator } from "react-native";
 
 export default function EventDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -22,10 +24,27 @@ export default function EventDetailScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
 
-  const event = upcomingEvents.find((e) => e.id === id) ?? upcomingEvents[0];
+  const { data: event, isLoading } = useQuery({ queryKey: ["event", id], queryFn: () => fetchEvent(id) });
+  
   const topPadding = Platform.OS === "web" ? 60 : insets.top;
 
   const categoryColor = "#2563EB";
+
+  if (isLoading) {
+    return (
+      <View style={[styles.root, { backgroundColor: colors.background, justifyContent: 'center' }]}>
+        <ActivityIndicator color={colors.primary} />
+      </View>
+    );
+  }
+
+  if (!event) {
+    return (
+      <View style={[styles.root, { backgroundColor: colors.background, justifyContent: 'center' }]}>
+        <Text style={{ color: colors.foreground, textAlign: 'center' }}>Event not found.</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={[styles.root, { backgroundColor: colors.background }]}>

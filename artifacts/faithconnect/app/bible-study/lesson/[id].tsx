@@ -20,24 +20,36 @@ import { NotesEditor } from "@/components/bible-study/NotesEditor";
 import { PrimaryButton } from "@/components/bible-study/PrimaryButton";
 import { useBibleStudy } from "@/components/bible-study/BibleStudyContext";
 import { useColors } from "@/hooks/useColors";
-import { getLessonById, getNextLesson, getLessonIndex } from "@/constants/bibleStudyMockData";
+import { useQuery } from "@tanstack/react-query";
+import { fetchLessonFromStudy, type MobileStudyLesson } from "@/services/api";
+import { ActivityIndicator } from "react-native";
 
 export default function LessonDetailScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, studyId } = useLocalSearchParams<{ id: string; studyId: string }>();
 
   const { getLessonStatus, markLessonComplete, saveNote, lessonNotes, lessonNotesSavedAt } =
     useBibleStudy();
 
-  const lesson = getLessonById(id as string);
-  const nextLesson = lesson ? getNextLesson(lesson.id) : undefined;
-  const lessonIndex = lesson ? getLessonIndex(lesson.id) : 0;
+  const { data: lesson, isLoading } = useQuery({ queryKey: ["lesson", studyId, id], queryFn: () => fetchLessonFromStudy(studyId, id) });
+  
+  // nextLesson would require fetching the full study; currently not available from the single-lesson query
+  const nextLesson: MobileStudyLesson | undefined = undefined;
+  const lessonIndex = 0;
 
   const topPadding = Platform.OS === "web" ? 60 : insets.top + 12;
 
   const [noteText, setNoteText] = useState(lessonNotes[id as string] ?? "");
+
+  if (isLoading) {
+    return (
+      <View style={[styles.root, { backgroundColor: colors.background, justifyContent: 'center' }]}>
+        <ActivityIndicator color={colors.primary} />
+      </View>
+    );
+  }
 
   if (!lesson) {
     return (
@@ -210,10 +222,10 @@ export default function LessonDetailScreen() {
 
             {nextLesson && (
               <PrimaryButton
-                label={`Continue → ${nextLesson.shortTitle}`}
+                label={`Continue → ${(nextLesson as any).shortTitle}`}
                 onPress={() => {
                   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                  router.push(`/bible-study/lesson/${nextLesson.id}`);
+                  router.push(`/bible-study/lesson/${(nextLesson as any).id}?studyId=${studyId}`);
                 }}
                 variant="outline"
               />

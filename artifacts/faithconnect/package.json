@@ -59,6 +59,7 @@
     "zod-validation-error": "^3.4.0"
   },
   "dependencies": {
-    "@hugeicons/react-native": "^1.0.15"
+    "@hugeicons/react-native": "^1.0.15",
+    "expo-av": "^16.0.8"
   }
 }

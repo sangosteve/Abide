@@ -3,10 +3,46 @@ import { MetricCard } from '@/components/ui/MetricCard';
 import { DataTable } from '@/components/ui/DataTable';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { Link } from 'wouter';
-import { Mic2, Plus, PlayCircle, Eye, Search } from 'lucide-react';
-import { mockSermons } from '@/data/mock';
+import { Mic2, Plus, PlayCircle, Eye, Search, Loader2 } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { sermonsApi } from '@/lib/api';
+import { useState } from 'react';
 
 export default function SermonsList() {
+  const [search, setSearch] = useState('');
+  const [publishStatus, setPublishStatus] = useState('');
+  const [mediaStatus, setMediaStatus] = useState('');
+
+  const params: Record<string, string> = {};
+  if (search) params.search = search;
+  if (publishStatus) params.publishStatus = publishStatus;
+  if (mediaStatus) params.mediaStatus = mediaStatus;
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['sermons', params],
+    queryFn: () => sermonsApi.list(params)
+  });
+
+  if (isLoading) {
+    return (
+      <AdminLayout title="Sermon Library">
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        </div>
+      </AdminLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <AdminLayout title="Sermon Library">
+        <div className="text-destructive p-4 border border-destructive/20 bg-destructive/5 rounded-lg">
+          Failed to load sermons.
+        </div>
+      </AdminLayout>
+    );
+  }
+
   return (
     <AdminLayout 
       title="Sermon Library"
@@ -18,7 +54,7 @@ export default function SermonsList() {
       }
     >
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <MetricCard title="Total Sermons" value="248" icon={<Mic2 className="w-5 h-5" />} />
+        <MetricCard title="Total Sermons" value={data?.total?.toString() ?? '0'} icon={<Mic2 className="w-5 h-5" />} />
         <MetricCard title="Total Views" value="45.2k" icon={<Eye className="w-5 h-5 text-muted-foreground" />} trend={{ value: '12%', isPositive: true }} />
         <MetricCard title="Avg. Watch Time" value="34m" icon={<PlayCircle className="w-5 h-5" />} />
         <MetricCard title="Active Series" value="8" icon={<Search className="w-5 h-5 text-muted-foreground" />} />
@@ -32,24 +68,36 @@ export default function SermonsList() {
               type="text" 
               placeholder="Search by title, speaker, or scripture..." 
               className="w-full bg-background border border-border rounded-md pl-9 pr-4 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
             />
           </div>
           <div className="flex gap-2 w-full sm:w-auto">
-            <select className="bg-background border border-border rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary flex-1 sm:flex-none">
-              <option>All Speakers</option>
-              <option>Pastor John Smith</option>
-              <option>Pastor David Wilson</option>
+            <select 
+              className="bg-background border border-border rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary flex-1 sm:flex-none"
+              value={publishStatus}
+              onChange={(e) => setPublishStatus(e.target.value)}
+            >
+              <option value="">All Statuses</option>
+              <option value="draft">Draft</option>
+              <option value="scheduled">Scheduled</option>
+              <option value="published">Published</option>
             </select>
-            <select className="bg-background border border-border rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary flex-1 sm:flex-none">
-              <option>Latest First</option>
-              <option>Oldest First</option>
-              <option>Most Viewed</option>
+            <select 
+              className="bg-background border border-border rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary flex-1 sm:flex-none"
+              value={mediaStatus}
+              onChange={(e) => setMediaStatus(e.target.value)}
+            >
+              <option value="">All Media Status</option>
+              <option value="none">None</option>
+              <option value="processing">Processing</option>
+              <option value="ready">Ready</option>
             </select>
           </div>
         </div>
 
         <DataTable 
-          data={mockSermons}
+          data={data?.items || []}
           keyExtractor={(s) => s.id}
           columns={[
             {
@@ -61,14 +109,14 @@ export default function SermonsList() {
                   </div>
                   <div>
                     <div className="font-medium text-foreground">{s.title}</div>
-                    <div className="text-xs text-muted-foreground">{s.speaker} • {s.series}</div>
+                    <div className="text-xs text-muted-foreground">{s.speaker} • {s.series || 'Standalone'}</div>
                   </div>
                 </div>
               )
             },
             { 
               header: 'Scripture', 
-              accessor: (s) => <span className="text-sm font-medium">{s.scripture}</span> 
+              accessor: (s) => <span className="text-sm font-medium">{s.scripture || '-'}</span> 
             },
             { 
               header: 'Date', 

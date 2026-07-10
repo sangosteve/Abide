@@ -18,7 +18,9 @@ import { ProgressBar } from "@/components/bible-study/ProgressBar";
 import { PrimaryButton } from "@/components/bible-study/PrimaryButton";
 import { useBibleStudy } from "@/components/bible-study/BibleStudyContext";
 import { useColors } from "@/hooks/useColors";
-import { getSeriesById } from "@/constants/bibleStudyMockData";
+import { useQuery } from "@tanstack/react-query";
+import { fetchStudy } from "@/services/api";
+import { ActivityIndicator } from "react-native";
 
 export default function StudyDetailScreen() {
   const colors = useColors();
@@ -27,8 +29,17 @@ export default function StudyDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { getLessonStatus, getCompletedCount } = useBibleStudy();
 
-  const series = getSeriesById(id as string);
+  const { data: series, isLoading } = useQuery({ queryKey: ["bible-study", id], queryFn: () => fetchStudy(id) });
+  
   const topPadding = Platform.OS === "web" ? 60 : insets.top;
+
+  if (isLoading) {
+    return (
+      <View style={[styles.root, { backgroundColor: colors.background, paddingTop: topPadding + 20, justifyContent: 'center' }]}>
+        <ActivityIndicator color={colors.primary} />
+      </View>
+    );
+  }
 
   if (!series) {
     return (
@@ -134,7 +145,7 @@ export default function StudyDetailScreen() {
               }
               onPress={() => {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                router.push(`/bible-study/lesson/${continueLesson.id}`);
+                router.push(`/bible-study/lesson/${continueLesson.id}?studyId=${series.id}`);
               }}
               icon={<HIcon name="play" size={16} color="#FFF" />}
             />
@@ -156,7 +167,7 @@ export default function StudyDetailScreen() {
               index={idx}
               onPress={() => {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                router.push(`/bible-study/lesson/${lesson.id}`);
+                router.push(`/bible-study/lesson/${lesson.id}?studyId=${series.id}`);
               }}
             />
           ))}

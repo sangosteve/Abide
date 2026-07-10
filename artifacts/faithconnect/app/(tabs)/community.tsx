@@ -14,7 +14,9 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useColors } from "@/hooks/useColors";
-import { communityPosts } from "@/constants/mockData";
+import { useQuery } from "@tanstack/react-query";
+import { fetchDiscussions } from "@/services/api";
+import { ActivityIndicator } from "react-native";
 import type { CommunityPost } from "@/types";
 
 const tabs = ["Discussions", "Prayer Wall", "Groups"];
@@ -31,19 +33,31 @@ export default function CommunityScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("Discussions");
-  const [posts, setPosts] = useState<CommunityPost[]>(communityPosts);
+  const [likedIds, setLikedIds] = useState(new Set<string>());
+  
+  const { data: generalPosts = [], isLoading: loadingGeneral } = useQuery({ queryKey: ["discussions", "general"], queryFn: () => fetchDiscussions("general") });
+  const { data: prayerPosts = [], isLoading: loadingPrayer } = useQuery({ queryKey: ["discussions", "prayer_request"], queryFn: () => fetchDiscussions("prayer_request") });
+  const { data: announcementPosts = [], isLoading: loadingAnnouncements } = useQuery({ queryKey: ["discussions", "announcement"], queryFn: () => fetchDiscussions("announcement") });
+  
+  const posts = activeTab === "Discussions" ? generalPosts : activeTab === "Prayer Wall" ? prayerPosts : announcementPosts;
+  const isLoading = activeTab === "Discussions" ? loadingGeneral : activeTab === "Prayer Wall" ? loadingPrayer : loadingAnnouncements;
+
   const topPadding = Platform.OS === "web" ? 80 : insets.top + 16;
 
   const toggleLike = (id: string) => {
-    setPosts((prev) =>
-      prev.map((p) =>
-        p.id === id
-          ? { ...p, isLiked: !p.isLiked, likes: p.isLiked ? p.likes - 1 : p.likes + 1 }
-          : p
-      )
-    );
+    setLikedIds((prev) => {
+      const s = new Set(prev);
+      s.has(id) ? s.delete(id) : s.add(id);
+      return s;
+    });
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   };
+  
+  const displayPosts = posts.map(p => ({
+    ...p,
+    isLiked: likedIds.has(p.id),
+    likes: p.likes + (likedIds.has(p.id) ? 1 : 0)
+  }));
 
   return (
     <ScrollView
@@ -124,71 +138,75 @@ export default function CommunityScreen() {
       <Text style={[styles.activityLabel, { color: colors.mutedForeground }]}>RECENT ACTIVITY</Text>
 
       {/* Posts */}
-      {posts.map((post) => {
-        const tagStyle = tagColors[post.tag] ?? { bg: colors.muted, text: colors.mutedForeground };
-        return (
-          <View
-            key={post.id}
-            style={[styles.postCard, { backgroundColor: colors.background, borderBottomColor: colors.border }]}
-          >
-            <View style={styles.postHeader}>
-              <Image source={{ uri: post.avatar }} style={styles.postAvatar} />
-              <View style={styles.postMeta}>
-                <View style={styles.authorRow}>
-                  <Text style={[styles.authorName, { color: colors.foreground }]}>
-                    {post.author}
+      {isLoading ? (
+        <ActivityIndicator color={colors.primary} style={{ marginVertical: 20 }} />
+      ) : (
+        displayPosts.map((post) => {
+          const tagStyle = tagColors[post.tag] ?? { bg: colors.muted, text: colors.mutedForeground };
+          return (
+            <View
+              key={post.id}
+              style={[styles.postCard, { backgroundColor: colors.background, borderBottomColor: colors.border }]}
+            >
+              <View style={styles.postHeader}>
+                <Image source={{ uri: post.avatar }} style={styles.postAvatar} />
+                <View style={styles.postMeta}>
+                  <View style={styles.authorRow}>
+                    <Text style={[styles.authorName, { color: colors.foreground }]}>
+                      {post.author}
+                    </Text>
+                    {post.role && (
+                      <View style={[styles.roleBadge, { backgroundColor: "#EFF6FF" }]}>
+                        <Text style={[styles.roleText, { color: colors.primary }]}>{post.role}</Text>
+                      </View>
+                    )}
+                  </View>
+                  <Text style={[styles.postTime, { color: colors.mutedForeground }]}>
+                    {post.timeAgo}
                   </Text>
-                  {post.role && (
-                    <View style={[styles.roleBadge, { backgroundColor: "#EFF6FF" }]}>
-                      <Text style={[styles.roleText, { color: colors.primary }]}>{post.role}</Text>
-                    </View>
-                  )}
                 </View>
-                <Text style={[styles.postTime, { color: colors.mutedForeground }]}>
-                  {post.timeAgo}
-                </Text>
-              </View>
-              <TouchableOpacity>
-                <HIcon name="more-horizontal" size={18} color={colors.mutedForeground} />
-              </TouchableOpacity>
-            </View>
-
-            <View style={[styles.tagBadge, { backgroundColor: tagStyle.bg }]}>
-              <Text style={[styles.tagText, { color: tagStyle.text }]}>{post.tag}</Text>
-            </View>
-
-            <Text style={[styles.postContent, { color: colors.foreground }]}>{post.content}</Text>
-
-            <View style={styles.postFooter}>
-              <View style={styles.postReactions}>
-                <TouchableOpacity
-                  style={styles.reactionBtn}
-                  onPress={() => toggleLike(post.id)}
-                >
-                  <HIcon
-                    name="heart"
-                    size={16}
-                    color={post.isLiked ? "#EF4444" : colors.mutedForeground}
-                  />
-                  <Text style={[styles.reactionCount, { color: post.isLiked ? "#EF4444" : colors.mutedForeground }]}>
-                    {post.likes}
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.reactionBtn}>
-                  <HIcon name="message-circle" size={16} color={colors.mutedForeground} />
-                  <Text style={[styles.reactionCount, { color: colors.mutedForeground }]}>
-                    {post.comments}
-                  </Text>
+                <TouchableOpacity>
+                  <HIcon name="more-horizontal" size={18} color={colors.mutedForeground} />
                 </TouchableOpacity>
               </View>
-              <TouchableOpacity style={styles.shareBtn}>
-                <HIcon name="share" size={16} color={colors.mutedForeground} />
-                <Text style={[styles.shareText, { color: colors.mutedForeground }]}>Share</Text>
-              </TouchableOpacity>
+
+              <View style={[styles.tagBadge, { backgroundColor: tagStyle.bg }]}>
+                <Text style={[styles.tagText, { color: tagStyle.text }]}>{post.tag}</Text>
+              </View>
+
+              <Text style={[styles.postContent, { color: colors.foreground }]}>{post.content}</Text>
+
+              <View style={styles.postFooter}>
+                <View style={styles.postReactions}>
+                  <TouchableOpacity
+                    style={styles.reactionBtn}
+                    onPress={() => toggleLike(post.id)}
+                  >
+                    <HIcon
+                      name="heart"
+                      size={16}
+                      color={post.isLiked ? "#EF4444" : colors.mutedForeground}
+                    />
+                    <Text style={[styles.reactionCount, { color: post.isLiked ? "#EF4444" : colors.mutedForeground }]}>
+                      {post.likes}
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.reactionBtn}>
+                    <HIcon name="message-circle" size={16} color={colors.mutedForeground} />
+                    <Text style={[styles.reactionCount, { color: colors.mutedForeground }]}>
+                      {post.comments}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+                <TouchableOpacity style={styles.shareBtn}>
+                  <HIcon name="share" size={16} color={colors.mutedForeground} />
+                  <Text style={[styles.shareText, { color: colors.mutedForeground }]}>Share</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-        );
-      })}
+          );
+        })
+      )}
 
       {/* FAB */}
       <TouchableOpacity

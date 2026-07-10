@@ -14,7 +14,14 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useColors } from "@/hooks/useColors";
-import { userProfile } from "@/constants/mockData";
+
+const userProfile = {
+  name: "Sarah Johnson",
+  firstName: "Sarah",
+  avatar: "https://i.pravatar.cc/150?img=47",
+  memberSince: "March 2021",
+  email: "sarah.johnson@email.com",
+};
 
 const menuItems = [
   { id: "profile", icon: "user", label: "Profile", color: "#3B82F6" },

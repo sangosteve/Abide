@@ -14,7 +14,9 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useColors } from "@/hooks/useColors";
-import { sermons } from "@/constants/mockData";
+import { useQuery } from "@tanstack/react-query";
+import { fetchSermon } from "@/services/api";
+import { ActivityIndicator } from "react-native";
 
 export default function SermonDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -25,7 +27,8 @@ export default function SermonDetailScreen() {
   const [progress, setProgress] = useState(0.34);
   const [isSaved, setIsSaved] = useState(false);
 
-  const sermon = sermons.find((s) => s.id === id) ?? sermons[0];
+  const { data: sermon, isLoading } = useQuery({ queryKey: ["sermon", id], queryFn: () => fetchSermon(id) });
+  
   const topPadding = Platform.OS === "web" ? 60 : insets.top;
 
   const togglePlay = () => {
@@ -41,6 +44,22 @@ export default function SermonDetailScreen() {
     return `${m}:${sec.toString().padStart(2, "0")}`;
   };
 
+  if (isLoading) {
+    return (
+      <View style={[styles.root, { backgroundColor: colors.background, justifyContent: 'center' }]}>
+        <ActivityIndicator color={colors.primary} />
+      </View>
+    );
+  }
+
+  if (!sermon) {
+    return (
+      <View style={[styles.root, { backgroundColor: colors.background, justifyContent: 'center' }]}>
+        <Text style={{ color: colors.foreground, textAlign: 'center' }}>Sermon not found.</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={[styles.root, { backgroundColor: colors.background }]}>
       <ScrollView
@@ -50,7 +69,7 @@ export default function SermonDetailScreen() {
         {/* Hero */}
         <View style={styles.heroContainer}>
           <Image
-            source={{ uri: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800" }}
+            source={{ uri: sermon.thumbnail }}
             style={styles.heroImage}
             resizeMode="cover"
           />

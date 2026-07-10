@@ -2,10 +2,10 @@ import React from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { HIcon } from "@/components/HIcon";
 import { useColors } from "@/hooks/useColors";
-import type { StudyLesson } from "@/constants/bibleStudyMockData";
+import type { MobileStudyLesson } from "@/services/api";
 
 interface LessonCardProps {
-  lesson: StudyLesson;
+  lesson: MobileStudyLesson;
   status: "completed" | "resume" | "start";
   index: number;
   onPress: () => void;

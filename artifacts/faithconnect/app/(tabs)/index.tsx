@@ -14,14 +14,23 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useColors } from "@/hooks/useColors";
-import { dailyVerse, sermons, upcomingEvents, quickActions } from "@/constants/mockData";
+import { useQuery } from "@tanstack/react-query";
+import { fetchSermons, fetchEvents } from "@/services/api";
+import { ActivityIndicator } from "react-native";
+
+const quickActions = [{ id: "bible", label: "Bible", icon: "book-open" }, { id: "prayer", label: "Prayer", icon: "message-circle" }, { id: "give", label: "Give", icon: "heart" }, { id: "events", label: "Events", icon: "calendar" }];
+const dailyVerse = { verse: '"But those who hope in the Lord will renew their strength…"', reference: "Isaiah 40:31" };
 
 export default function HomeScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const [verseHearted, setVerseHearted] = useState(false);
-  const featured = sermons[1];
+  const { data: sermonsData, isLoading: isLoadingSermons } = useQuery({ queryKey: ["sermons"], queryFn: fetchSermons });
+  const { data: eventsData, isLoading: isLoadingEvents } = useQuery({ queryKey: ["events"], queryFn: fetchEvents });
+
+  const featured = sermonsData?.[1] ?? sermonsData?.[0];
+  const upcomingEvents = eventsData ?? [];
 
   const topPadding = Platform.OS === "web" ? 80 : insets.top + 16;
 
@@ -75,32 +84,40 @@ export default function HomeScreen() {
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity
-        style={styles.featuredCard}
-        onPress={() => router.push(`/sermon/${featured.id}`)}
-        activeOpacity={0.92}
-      >
-        <Image
-          source={{ uri: "https://images.unsplash.com/photo-1429514513361-8a632ff5f2ba?w=800" }}
-          style={styles.featuredImage}
-          resizeMode="cover"
-        />
-        <View style={styles.featuredOverlay} />
-        <View style={styles.featuredBadgeRow}>
-          <View style={[styles.newBadge, { backgroundColor: colors.primary }]}>
-            <Text style={styles.newBadgeText}>New Release</Text>
+      {isLoadingSermons || !featured ? (
+        <View style={[styles.featuredCard, { backgroundColor: colors.muted, justifyContent: 'center', alignItems: 'center' }]}>
+          <ActivityIndicator color={colors.primary} />
+        </View>
+      ) : (
+        <TouchableOpacity
+          style={styles.featuredCard}
+          onPress={() => router.push(`/sermon/${featured.id}`)}
+          activeOpacity={0.92}
+        >
+          <Image
+            source={{ uri: featured.thumbnail || "https://images.unsplash.com/photo-1429514513361-8a632ff5f2ba?w=800" }}
+            style={styles.featuredImage}
+            resizeMode="cover"
+          />
+          <View style={styles.featuredOverlay} />
+          <View style={styles.featuredBadgeRow}>
+            {featured.isNew && (
+              <View style={[styles.newBadge, { backgroundColor: colors.primary }]}>
+                <Text style={styles.newBadgeText}>New Release</Text>
+              </View>
+            )}
           </View>
-        </View>
-        <View style={styles.featuredPlayBtn}>
-          <HIcon name="play-circle" size={44} color="rgba(255,255,255,0.9)" />
-        </View>
-        <View style={styles.featuredContent}>
-          <Text style={styles.featuredTitle} numberOfLines={2}>
-            {featured.title}
-          </Text>
-          <Text style={styles.featuredSpeaker}>{featured.speaker}</Text>
-        </View>
-      </TouchableOpacity>
+          <View style={styles.featuredPlayBtn}>
+            <HIcon name="play-circle" size={44} color="rgba(255,255,255,0.9)" />
+          </View>
+          <View style={styles.featuredContent}>
+            <Text style={styles.featuredTitle} numberOfLines={2}>
+              {featured.title}
+            </Text>
+            <Text style={styles.featuredSpeaker}>{featured.speaker}</Text>
+          </View>
+        </TouchableOpacity>
+      )}
 
       {/* Quick Actions */}
       <View style={styles.quickActionsRow}>
@@ -174,7 +191,9 @@ export default function HomeScreen() {
         </TouchableOpacity>
       </View>
 
-      {upcomingEvents.slice(0, 2).map((event) => (
+      {isLoadingEvents ? (
+        <ActivityIndicator color={colors.primary} style={{ marginVertical: 20 }} />
+      ) : upcomingEvents.slice(0, 2).map((event) => (
         <TouchableOpacity
           key={event.id}
           style={[styles.eventRow, { backgroundColor: colors.card, borderColor: colors.border }]}

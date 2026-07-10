@@ -2,17 +2,71 @@ import { AdminLayout } from '@/components/layout/AdminLayout';
 import { UploadCard } from '@/components/ui/UploadCard';
 import { PreviewPanel } from '@/components/ui/PreviewPanel';
 import { Mic2, Video, FileAudio, Image as ImageIcon, Settings } from 'lucide-react';
+import { useState } from 'react';
+import { useLocation } from 'wouter';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { sermonsApi, CreateSermonInput } from '@/lib/api';
 
 export default function CreateSermon() {
+  const [, setLocation] = useLocation();
+  const queryClient = useQueryClient();
+  
+  const [formData, setFormData] = useState<CreateSermonInput>({
+    title: '',
+    speaker: '',
+    series: null,
+    scripture: null,
+    date: new Date().toISOString().split('T')[0],
+    duration: null,
+    summary: null,
+    mediaStatus: 'none',
+    publishStatus: 'draft',
+    featuredOnHomepage: false,
+    notifyMembers: false,
+    videoUrl: null,
+    audioUrl: null,
+    thumbnailUrl: null,
+    visibility: 'public',
+    scheduledAt: null
+  });
+
+  const [error, setError] = useState('');
+
+  const createMutation = useMutation({
+    mutationFn: (status: 'draft' | 'published') => sermonsApi.create({ ...formData, publishStatus: status }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['sermons'] });
+      setLocation('/sermons');
+    },
+    onError: (err: Error) => {
+      setError(err.message);
+    }
+  });
+
   return (
     <AdminLayout 
       title="Upload Sermon"
       action={
         <div className="flex items-center gap-3">
-          <button className="px-4 py-2 text-sm font-medium text-foreground bg-background border border-border rounded-md hover:bg-muted transition-colors shadow-sm">
+          <button 
+            type="button"
+            onClick={() => setLocation('/sermons')}
+            className="px-4 py-2 text-sm font-medium text-foreground bg-background border border-border rounded-md hover:bg-muted transition-colors shadow-sm"
+          >
+            Cancel
+          </button>
+          <button 
+            onClick={() => createMutation.mutate('draft')}
+            disabled={createMutation.isPending}
+            className="px-4 py-2 text-sm font-medium text-foreground bg-background border border-border rounded-md hover:bg-muted transition-colors shadow-sm disabled:opacity-50"
+          >
             Save Draft
           </button>
-          <button className="px-4 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-md hover:opacity-90 transition-opacity shadow-sm">
+          <button 
+            onClick={() => createMutation.mutate('published')}
+            disabled={createMutation.isPending}
+            className="px-4 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-md hover:opacity-90 transition-opacity shadow-sm disabled:opacity-50"
+          >
             Publish Sermon
           </button>
         </div>
@@ -20,6 +74,11 @@ export default function CreateSermon() {
     >
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
+          {error && (
+            <div className="text-destructive p-4 border border-destructive/20 bg-destructive/5 rounded-lg text-sm">
+              {error}
+            </div>
+          )}
           <div className="bg-card border border-border rounded-xl shadow-sm overflow-hidden">
             <div className="px-6 py-4 border-b border-border bg-background/50 flex justify-between items-center">
               <h2 className="font-semibold text-foreground flex items-center gap-2">
@@ -30,41 +89,65 @@ export default function CreateSermon() {
             <div className="p-6 space-y-6">
               <div className="space-y-1.5">
                 <label className="text-sm font-medium text-foreground">Sermon Title</label>
-                <input type="text" className="w-full px-3 py-2 bg-background border border-border rounded-md text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="e.g. Walking on Water" />
+                <input 
+                  type="text" 
+                  className="w-full px-3 py-2 bg-background border border-border rounded-md text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" 
+                  placeholder="e.g. Walking on Water" 
+                  value={formData.title}
+                  onChange={e => setFormData({ ...formData, title: e.target.value })}
+                />
               </div>
               
               <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-1.5">
                   <label className="text-sm font-medium text-foreground">Speaker</label>
-                  <select className="w-full px-3 py-2 bg-background border border-border rounded-md text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary">
-                    <option>Select Speaker</option>
-                    <option>Pastor John Smith</option>
-                    <option>Pastor David Wilson</option>
-                    <option>Add New Speaker...</option>
-                  </select>
+                  <input 
+                    type="text" 
+                    className="w-full px-3 py-2 bg-background border border-border rounded-md text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+                    placeholder="e.g. Pastor John Smith"
+                    value={formData.speaker}
+                    onChange={e => setFormData({ ...formData, speaker: e.target.value })}
+                  />
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-sm font-medium text-foreground">Sermon Series</label>
-                  <select className="w-full px-3 py-2 bg-background border border-border rounded-md text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary">
-                    <option>None (Standalone)</option>
-                    <option>Faith That Overcomes</option>
-                    <option>The Gospel of John</option>
-                    <option>Create New Series...</option>
-                  </select>
+                  <input 
+                    type="text" 
+                    className="w-full px-3 py-2 bg-background border border-border rounded-md text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+                    placeholder="None (Standalone)"
+                    value={formData.series || ''}
+                    onChange={e => setFormData({ ...formData, series: e.target.value })}
+                  />
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-sm font-medium text-foreground">Date Delivered</label>
-                  <input type="date" className="w-full px-3 py-2 bg-background border border-border rounded-md text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+                  <input 
+                    type="date" 
+                    className="w-full px-3 py-2 bg-background border border-border rounded-md text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" 
+                    value={formData.date}
+                    onChange={e => setFormData({ ...formData, date: e.target.value })}
+                  />
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-sm font-medium text-foreground">Primary Scripture</label>
-                  <input type="text" className="w-full px-3 py-2 bg-background border border-border rounded-md text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="e.g. Matthew 14:22-33" />
+                  <input 
+                    type="text" 
+                    className="w-full px-3 py-2 bg-background border border-border rounded-md text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" 
+                    placeholder="e.g. Matthew 14:22-33" 
+                    value={formData.scripture || ''}
+                    onChange={e => setFormData({ ...formData, scripture: e.target.value })}
+                  />
                 </div>
               </div>
 
               <div className="space-y-1.5">
                 <label className="text-sm font-medium text-foreground">Summary / Description</label>
-                <textarea className="w-full px-3 py-2 bg-background border border-border rounded-md text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary h-24 resize-none" placeholder="A brief description of the message..." />
+                <textarea 
+                  className="w-full px-3 py-2 bg-background border border-border rounded-md text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary h-24 resize-none" 
+                  placeholder="A brief description of the message..." 
+                  value={formData.summary || ''}
+                  onChange={e => setFormData({ ...formData, summary: e.target.value })}
+                />
               </div>
             </div>
           </div>
@@ -81,7 +164,13 @@ export default function CreateSermon() {
                 <label className="text-sm font-medium text-foreground mb-2 block">Video File</label>
                 <UploadCard label="Upload Video" description="MP4, MOV (max 2GB)" icon={Video} />
                 <div className="mt-2 text-center text-xs text-muted-foreground">or</div>
-                <input type="text" className="w-full mt-2 px-3 py-2 bg-background border border-border rounded-md text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="Paste YouTube / Vimeo URL" />
+                <input 
+                  type="text" 
+                  className="w-full mt-2 px-3 py-2 bg-background border border-border rounded-md text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" 
+                  placeholder="Paste YouTube / Vimeo URL" 
+                  value={formData.videoUrl || ''}
+                  onChange={e => setFormData({ ...formData, videoUrl: e.target.value, mediaStatus: 'ready' })}
+                />
               </div>
               
               <div>
@@ -102,14 +191,24 @@ export default function CreateSermon() {
             <div className="space-y-6">
               <div className="space-y-4">
                 <label className="flex items-start gap-3 p-3 border border-border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
-                  <input type="checkbox" className="mt-1 text-primary rounded focus:ring-primary" defaultChecked />
+                  <input 
+                    type="checkbox" 
+                    className="mt-1 text-primary rounded focus:ring-primary" 
+                    checked={formData.featuredOnHomepage}
+                    onChange={e => setFormData({ ...formData, featuredOnHomepage: e.target.checked })}
+                  />
                   <div>
                     <div className="text-sm font-medium text-foreground">Feature on Homepage</div>
                     <div className="text-xs text-muted-foreground mt-0.5">Show this sermon at the top of the app</div>
                   </div>
                 </label>
                 <label className="flex items-start gap-3 p-3 border border-border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
-                  <input type="checkbox" className="mt-1 text-primary rounded focus:ring-primary" defaultChecked />
+                  <input 
+                    type="checkbox" 
+                    className="mt-1 text-primary rounded focus:ring-primary" 
+                    checked={formData.notifyMembers}
+                    onChange={e => setFormData({ ...formData, notifyMembers: e.target.checked })}
+                  />
                   <div>
                     <div className="text-sm font-medium text-foreground">Notify Members</div>
                     <div className="text-xs text-muted-foreground mt-0.5">Send a push notification when published</div>
@@ -124,7 +223,12 @@ export default function CreateSermon() {
                 </h4>
                 <div className="space-y-1.5">
                   <label className="text-xs font-medium text-muted-foreground">Publish Date</label>
-                  <input type="datetime-local" className="w-full px-3 py-2 bg-background border border-border rounded-md text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+                  <input 
+                    type="datetime-local" 
+                    className="w-full px-3 py-2 bg-background border border-border rounded-md text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" 
+                    value={formData.scheduledAt || ''}
+                    onChange={e => setFormData({ ...formData, scheduledAt: e.target.value })}
+                  />
                 </div>
               </div>
             </div>

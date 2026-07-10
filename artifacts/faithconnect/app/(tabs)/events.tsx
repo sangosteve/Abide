@@ -13,20 +13,27 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useColors } from "@/hooks/useColors";
-import { upcomingEvents } from "@/constants/mockData";
+import { useQuery } from "@tanstack/react-query";
+import { fetchEvents } from "@/services/api";
+import { ActivityIndicator } from "react-native";
+import type { Event } from "@/types";
 
 const categories = ["All", "Worship", "Youth", "Community", "Kids"];
-
-const grouped: Record<string, typeof upcomingEvents> = {
-  "OCTOBER 2023": upcomingEvents.filter((e) => e.month === "OCT"),
-  "NOVEMBER 2023": upcomingEvents.filter((e) => e.month === "NOV"),
-};
 
 export default function EventsScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const [activeCategory, setActiveCategory] = useState("All");
+  
+  const { data: events = [], isLoading } = useQuery({ queryKey: ["events"], queryFn: fetchEvents });
+
+  const grouped = events.reduce((acc, e) => {
+    (acc[e.month] = acc[e.month] ?? []);
+    acc[e.month].push(e);
+    return acc;
+  }, {} as Record<string, typeof events>);
+
   const topPadding = Platform.OS === "web" ? 80 : insets.top + 16;
 
   return (
@@ -86,48 +93,52 @@ export default function EventsScreen() {
       </ScrollView>
 
       {/* Grouped Events */}
-      {Object.entries(grouped).map(([month, events]) => (
-        <View key={month}>
-          <Text style={[styles.monthLabel, { color: colors.mutedForeground }]}>{month}</Text>
-          {events.map((event) => (
-            <TouchableOpacity
-              key={event.id}
-              style={[styles.eventCard, { backgroundColor: colors.card, borderColor: colors.border }]}
-              onPress={() => router.push(`/event/${event.id}`)}
-              activeOpacity={0.85}
-            >
-              <View style={[styles.dateBlock, { backgroundColor: colors.primary }]}>
-                <Text style={styles.dateMonth}>{event.month}</Text>
-                <Text style={styles.dateDay}>{event.day}</Text>
-              </View>
-              <View style={styles.eventInfo}>
-                <Text style={[styles.eventCategory, { color: colors.mutedForeground }]}>
-                  {event.category}
-                </Text>
-                <Text style={[styles.eventTitle, { color: colors.foreground }]} numberOfLines={1}>
-                  {event.title}
-                </Text>
-                <View style={styles.metaRow}>
-                  <HIcon name="clock" size={12} color={colors.mutedForeground} />
-                  <Text style={[styles.metaText, { color: colors.mutedForeground }]}>
-                    {event.time}
-                  </Text>
+      {isLoading ? (
+        <ActivityIndicator color={colors.primary} style={{ marginVertical: 20 }} />
+      ) : (
+        Object.entries(grouped).map(([month, events]) => (
+          <View key={month}>
+            <Text style={[styles.monthLabel, { color: colors.mutedForeground }]}>{month}</Text>
+            {events.map((event) => (
+              <TouchableOpacity
+                key={event.id}
+                style={[styles.eventCard, { backgroundColor: colors.card, borderColor: colors.border }]}
+                onPress={() => router.push(`/event/${event.id}`)}
+                activeOpacity={0.85}
+              >
+                <View style={[styles.dateBlock, { backgroundColor: colors.primary }]}>
+                  <Text style={styles.dateMonth}>{event.month}</Text>
+                  <Text style={styles.dateDay}>{event.day}</Text>
                 </View>
-                <View style={styles.metaRow}>
-                  <HIcon name="map-pin" size={12} color={colors.mutedForeground} />
-                  <Text style={[styles.metaText, { color: colors.mutedForeground }]}>
-                    {event.venue}
+                <View style={styles.eventInfo}>
+                  <Text style={[styles.eventCategory, { color: colors.mutedForeground }]}>
+                    {event.category}
                   </Text>
+                  <Text style={[styles.eventTitle, { color: colors.foreground }]} numberOfLines={1}>
+                    {event.title}
+                  </Text>
+                  <View style={styles.metaRow}>
+                    <HIcon name="clock" size={12} color={colors.mutedForeground} />
+                    <Text style={[styles.metaText, { color: colors.mutedForeground }]}>
+                      {event.time}
+                    </Text>
+                  </View>
+                  <View style={styles.metaRow}>
+                    <HIcon name="map-pin" size={12} color={colors.mutedForeground} />
+                    <Text style={[styles.metaText, { color: colors.mutedForeground }]}>
+                      {event.venue}
+                    </Text>
+                  </View>
                 </View>
-              </View>
-              <Image
-                source={{ uri: event.image }}
-                style={styles.eventThumb}
-              />
-            </TouchableOpacity>
-          ))}
-        </View>
-      ))}
+                <Image
+                  source={{ uri: event.image }}
+                  style={styles.eventThumb}
+                />
+              </TouchableOpacity>
+            ))}
+          </View>
+        ))
+      )}
 
       {/* Footer */}
       <View style={styles.footer}>

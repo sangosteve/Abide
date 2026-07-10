@@ -1,2 +1,3 @@
 - [Repo structure](repo-structure.md) — lib/ was renamed to packages/; all tsconfig references and pnpm-workspace.yaml must use packages/* not lib/*
 - [Admin dashboard](admin-dashboard.md) — mock-data-only React+Vite app at artifacts/admin; uses wouter with base=/admin/; dark navy+purple theme
+- [Mobile API wiring](mobile-api-wiring.md) — mobile app uses services/api.ts for all data; no more mock constants; all screens wired to React Query

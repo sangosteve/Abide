@@ -17,7 +17,9 @@ import { LessonCard } from "@/components/bible-study/LessonCard";
 import { ProgressBar } from "@/components/bible-study/ProgressBar";
 import { useBibleStudy } from "@/components/bible-study/BibleStudyContext";
 import { useColors } from "@/hooks/useColors";
-import { studySeries, studyLessons } from "@/constants/bibleStudyMockData";
+import { useQuery } from "@tanstack/react-query";
+import { fetchStudySeries } from "@/services/api";
+import { ActivityIndicator } from "react-native";
 
 const filterTabs = ["All", "By Book", "By Topic", "My Studies"];
 
@@ -31,13 +33,14 @@ export default function BibleStudyHome() {
   const router = useRouter();
   const { getLessonStatus, getCompletedCount } = useBibleStudy();
   const [activeFilter, setActiveFilter] = useState("All");
+  
+  const { data: studies = [], isLoading } = useQuery({ queryKey: ["bible-studies"], queryFn: fetchStudySeries });
+  const series = studies?.[0];
+  const previewLessons = series?.lessons.slice(0, 3) ?? [];
 
   const topPadding = Platform.OS === "web" ? 80 : insets.top + 16;
-  const series = studySeries[0];
-  const completedCount = getCompletedCount(series.lessons.map((l) => l.id));
-  const progress = completedCount / series.totalSessions;
-
-  const previewLessons = studyLessons.slice(0, 3);
+  const completedCount = series ? getCompletedCount(series.lessons.map((l) => l.id)) : 0;
+  const progress = series ? completedCount / series.totalSessions : 0;
 
   return (
     <View style={[styles.root, { backgroundColor: colors.background }]}>
@@ -65,47 +68,51 @@ export default function BibleStudyHome() {
         </View>
 
         {/* Current Series Hero */}
-        <TouchableOpacity
-          style={styles.seriesBanner}
-          activeOpacity={0.9}
-          onPress={() => {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-            router.push(`/bible-study/study/${series.id}`);
-          }}
-        >
-          <Image
-            source={{ uri: series.image }}
-            style={styles.bannerImage}
-            resizeMode="cover"
-          />
-          <View style={styles.bannerOverlay} />
-          <View style={styles.liveRow}>
-            <View style={styles.liveBadge}>
-              <View style={styles.liveDot} />
-              <Text style={styles.liveText}>CURRENT SERIES</Text>
-            </View>
-          </View>
-          <View style={styles.bannerContent}>
-            <Text style={styles.bannerTitle}>{series.title}</Text>
-            <View style={styles.bannerMeta}>
-              <Image source={{ uri: series.teacherAvatar }} style={styles.bannerAvatar} />
-              <Text style={styles.bannerSpeaker}>{series.teacher}</Text>
-            </View>
-            <View style={styles.progressRow}>
-              <View style={styles.progressLabelRow}>
-                <Text style={styles.progressLabel}>
-                  PROGRESS: {Math.round(progress * 100)}%
-                </Text>
-                <Text style={styles.progressDays}>
-                  {completedCount}/{series.totalSessions} SESSIONS
-                </Text>
-              </View>
-              <View style={styles.progressTrack}>
-                <View style={[styles.progressFill, { width: `${progress * 100}%` }]} />
+        {isLoading ? (
+          <ActivityIndicator color={colors.primary} style={{ marginVertical: 40 }} />
+        ) : series ? (
+          <TouchableOpacity
+            style={styles.seriesBanner}
+            activeOpacity={0.9}
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              router.push(`/bible-study/study/${series.id}`);
+            }}
+          >
+            <Image
+              source={{ uri: series.image }}
+              style={styles.bannerImage}
+              resizeMode="cover"
+            />
+            <View style={styles.bannerOverlay} />
+            <View style={styles.liveRow}>
+              <View style={styles.liveBadge}>
+                <View style={styles.liveDot} />
+                <Text style={styles.liveText}>CURRENT SERIES</Text>
               </View>
             </View>
-          </View>
-        </TouchableOpacity>
+            <View style={styles.bannerContent}>
+              <Text style={styles.bannerTitle}>{series.title}</Text>
+              <View style={styles.bannerMeta}>
+                <Image source={{ uri: series.teacherAvatar }} style={styles.bannerAvatar} />
+                <Text style={styles.bannerSpeaker}>{series.teacher}</Text>
+              </View>
+              <View style={styles.progressRow}>
+                <View style={styles.progressLabelRow}>
+                  <Text style={styles.progressLabel}>
+                    PROGRESS: {Math.round(progress * 100)}%
+                  </Text>
+                  <Text style={styles.progressDays}>
+                    {completedCount}/{series.totalSessions} SESSIONS
+                  </Text>
+                </View>
+                <View style={styles.progressTrack}>
+                  <View style={[styles.progressFill, { width: `${progress * 100}%` }]} />
+                </View>
+              </View>
+            </View>
+          </TouchableOpacity>
+        ) : null}
 
         {/* Filter Tabs */}
         <ScrollView
@@ -139,9 +146,11 @@ export default function BibleStudyHome() {
         {/* Your Lessons */}
         <View style={styles.sectionHeader}>
           <Text style={[styles.sectionTitle, { color: colors.foreground }]}>Your Lessons</Text>
-          <TouchableOpacity onPress={() => router.push(`/bible-study/study/${series.id}`)}>
-            <Text style={[styles.viewAll, { color: colors.primary }]}>See All</Text>
-          </TouchableOpacity>
+          {series && (
+            <TouchableOpacity onPress={() => router.push(`/bible-study/study/${series.id}`)}>
+              <Text style={[styles.viewAll, { color: colors.primary }]}>See All</Text>
+            </TouchableOpacity>
+          )}
         </View>
 
         <View style={styles.lessonList}>
@@ -153,21 +162,23 @@ export default function BibleStudyHome() {
               index={idx}
               onPress={() => {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                router.push(`/bible-study/lesson/${lesson.id}`);
+                router.push(`/bible-study/lesson/${lesson.id}?studyId=${series?.id}`);
               }}
             />
           ))}
         </View>
 
-        <TouchableOpacity
-          style={[styles.seeAllLessons, { borderColor: colors.border }]}
-          onPress={() => router.push(`/bible-study/study/${series.id}`)}
-        >
-          <Text style={[styles.seeAllLessonsText, { color: colors.primary }]}>
-            View All {series.totalSessions} Sessions
-          </Text>
-          <HIcon name="chevron-right" size={16} color={colors.primary} />
-        </TouchableOpacity>
+        {series && (
+          <TouchableOpacity
+            style={[styles.seeAllLessons, { borderColor: colors.border }]}
+            onPress={() => router.push(`/bible-study/study/${series.id}`)}
+          >
+            <Text style={[styles.seeAllLessonsText, { color: colors.primary }]}>
+              View All {series.totalSessions} Sessions
+            </Text>
+            <HIcon name="chevron-right" size={16} color={colors.primary} />
+          </TouchableOpacity>
+        )}
 
         {/* Reading Plan */}
         <View style={styles.sectionHeader}>
@@ -235,7 +246,10 @@ export default function BibleStudyHome() {
 
         <TouchableOpacity
           style={[styles.notesPreview, { backgroundColor: colors.card, borderColor: colors.border }]}
-          onPress={() => router.push(`/bible-study/lesson/proverbs-2`)}
+          onPress={() => {
+            const first = series?.lessons[0];
+            if (first && series) router.push(`/bible-study/lesson/${first.id}?studyId=${series.id}`);
+          }}
           activeOpacity={0.85}
         >
           <View style={styles.notesPreviewLeft}>

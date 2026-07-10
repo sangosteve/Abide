@@ -14,7 +14,13 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useColors } from "@/hooks/useColors";
-import { givingFunds } from "@/constants/mockData";
+
+const givingFunds = [
+  { id: "tithe", name: "Tithe", description: "General support", icon: "heart" },
+  { id: "offering", name: "Offering", description: "Special projects", icon: "gift" },
+  { id: "missions", name: "Missions", description: "Global outreach", icon: "globe" },
+  { id: "building", name: "Building Fund", description: "Expansion project", icon: "home" },
+];
 
 const tabs = ["Give", "Scheduled", "History"];
 const presetAmounts = [10, 25, 50, 100];
