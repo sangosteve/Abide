@@ -19,6 +19,16 @@ const API_BASE = process.env.EXPO_PUBLIC_DOMAIN
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
+/** Resolve a server-relative media path (e.g. "/api/media/foo.mp4") into an
+ * absolute URL the mobile client can fetch/play. Already-absolute URLs
+ * (external video links) are passed through unchanged. */
+function resolveMediaUrl(path: string | null | undefined): string | null {
+  if (!path) return null;
+  if (/^https?:\/\//i.test(path)) return path;
+  const origin = API_BASE.replace(/\/api$/, "");
+  return `${origin}${path.startsWith("/") ? path : `/${path}`}`;
+}
+
 async function get<T>(path: string, params?: Record<string, string>): Promise<T> {
   const url = new URL(`${API_BASE}${path}`);
   if (params) Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
@@ -83,6 +93,8 @@ interface ApiSermon {
   duration: number | null;
   summary: string | null;
   thumbnailUrl: string | null;
+  videoUrl: string | null;
+  audioUrl: string | null;
   publishStatus: "draft" | "scheduled" | "published";
   views: number;
   createdAt: string;
@@ -202,6 +214,8 @@ function toMobileSermon(s: ApiSermon): Sermon {
     thumbnail: s.thumbnailUrl ?? FALLBACK_SERMON,
     description: s.summary ?? "",
     series: s.series ?? "",
+    videoUrl: resolveMediaUrl(s.videoUrl),
+    audioUrl: resolveMediaUrl(s.audioUrl),
     isNew: s.publishStatus === "published" &&
       Date.now() - new Date(s.createdAt).getTime() < 7 * 86_400_000,
   };

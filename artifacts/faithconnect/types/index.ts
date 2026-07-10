@@ -8,6 +8,8 @@ export interface Sermon {
   thumbnail: string;
   description: string;
   series: string;
+  videoUrl?: string | null;
+  audioUrl?: string | null;
   isNew?: boolean;
 }
 

@@ -79,7 +79,14 @@ export default function CreateUser() {
             <div className="p-6 space-y-6">
               <div className="flex gap-6 items-start">
                 <div className="w-32 flex-shrink-0">
-                  <UploadCard label="Photo" description="JPG or PNG" icon={User} />
+                  <UploadCard
+                    label="Photo"
+                    description="JPG or PNG"
+                    icon={User}
+                    accept="image/*"
+                    currentUrl={formData.photoUrl}
+                    onUploaded={(url) => setFormData({ ...formData, photoUrl: url || null })}
+                  />
                 </div>
                 <div className="flex-1 grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">

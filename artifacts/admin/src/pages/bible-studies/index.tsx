@@ -3,13 +3,14 @@ import { MetricCard } from '@/components/ui/MetricCard';
 import { DataTable } from '@/components/ui/DataTable';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { Link } from 'wouter';
-import { BookOpen, Plus, PlayCircle, Users, Loader2 } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
+import { BookOpen, Plus, PlayCircle, Users, Loader2, Trash2 } from 'lucide-react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { bibleStudiesApi } from '@/lib/api';
 import { useState } from 'react';
 
 export default function BibleStudiesList() {
   const [statusFilter, setStatusFilter] = useState('');
+  const queryClient = useQueryClient();
 
   const params: Record<string, string> = {};
   if (statusFilter) params.status = statusFilter;
@@ -17,6 +18,11 @@ export default function BibleStudiesList() {
   const { data, isLoading, error } = useQuery({
     queryKey: ['bible-studies', params],
     queryFn: () => bibleStudiesApi.list(params)
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => bibleStudiesApi.delete(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['bible-studies'] })
   });
 
   const activeSeries = data?.items.filter(s => s.status === 'active').length || 0;
@@ -117,8 +123,18 @@ export default function BibleStudiesList() {
             { header: 'Status', accessor: (s) => <StatusBadge status={s.status} /> },
             { 
               header: '', 
-              accessor: () => (
-                <button className="text-primary hover:text-primary/80 text-sm font-medium">Manage</button>
+              accessor: (s) => (
+                <div className="flex items-center justify-end gap-3">
+                  <Link href={`/bible-studies/${s.id}/manage`} className="text-primary hover:text-primary/80 text-sm font-medium">Manage</Link>
+                  <Link href={`/bible-studies/${s.id}/edit`} className="text-primary hover:text-primary/80 text-sm font-medium">Edit</Link>
+                  <button
+                    type="button"
+                    onClick={() => { if (confirm(`Delete "${s.title}"?`)) deleteMutation.mutate(s.id); }}
+                    className="text-muted-foreground hover:text-destructive"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
               )
             }
           ]}

@@ -171,7 +171,14 @@ export default function EditSermon() {
             <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="col-span-1 md:col-span-2">
                 <label className="text-sm font-medium text-foreground mb-2 block">Video File</label>
-                <UploadCard label="Upload Video" description="MP4, MOV (max 2GB)" icon={Video} />
+                <UploadCard
+                  label="Upload Video"
+                  description="MP4, MOV (max 2GB)"
+                  icon={Video}
+                  accept="video/*"
+                  currentUrl={formData.videoUrl}
+                  onUploaded={(url) => setFormData({ ...formData, videoUrl: url || null, mediaStatus: url ? 'ready' : 'none' })}
+                />
                 <div className="mt-2 text-center text-xs text-muted-foreground">or</div>
                 <input
                   type="text"
@@ -184,12 +191,26 @@ export default function EditSermon() {
 
               <div>
                 <label className="text-sm font-medium text-foreground mb-2 block">Audio Only (Optional)</label>
-                <UploadCard label="Upload Audio" description="MP3, M4A" icon={FileAudio} />
+                <UploadCard
+                  label="Upload Audio"
+                  description="MP3, M4A"
+                  icon={FileAudio}
+                  accept="audio/*"
+                  currentUrl={formData.audioUrl}
+                  onUploaded={(url) => setFormData({ ...formData, audioUrl: url || null })}
+                />
               </div>
 
               <div>
                 <label className="text-sm font-medium text-foreground mb-2 block">Thumbnail Image</label>
-                <UploadCard label="Upload Cover" description="1920x1080 (16:9)" icon={ImageIcon} />
+                <UploadCard
+                  label="Upload Cover"
+                  description="1920x1080 (16:9)"
+                  icon={ImageIcon}
+                  accept="image/*"
+                  currentUrl={formData.thumbnailUrl}
+                  onUploaded={(url) => setFormData({ ...formData, thumbnailUrl: url || null })}
+                />
               </div>
             </div>
           </div>

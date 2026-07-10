@@ -3,15 +3,16 @@ import { MetricCard } from '@/components/ui/MetricCard';
 import { DataTable } from '@/components/ui/DataTable';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { Link } from 'wouter';
-import { Calendar, Plus, Users, MapPin, List, CalendarDays, Loader2, Search } from 'lucide-react';
+import { Calendar, Plus, Users, MapPin, List, CalendarDays, Loader2, Search, Trash2 } from 'lucide-react';
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { eventsApi } from '@/lib/api';
 
 export default function EventsList() {
   const [view, setView] = useState<'list' | 'calendar'>('list');
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const queryClient = useQueryClient();
 
   const params: Record<string, string> = {};
   if (search) params.search = search;
@@ -20,6 +21,11 @@ export default function EventsList() {
   const { data, isLoading, error } = useQuery({
     queryKey: ['events', params],
     queryFn: () => eventsApi.list(params)
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => eventsApi.delete(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['events'] })
   });
 
   if (isLoading) {
@@ -136,8 +142,17 @@ export default function EventsList() {
               { header: 'Status', accessor: (e) => <StatusBadge status={e.publishStatus} /> },
               { 
                 header: '', 
-                accessor: () => (
-                  <button className="text-primary hover:text-primary/80 text-sm font-medium">Manage</button>
+                accessor: (e) => (
+                  <div className="flex items-center justify-end gap-3">
+                    <Link href={`/events/${e.id}/edit`} className="text-primary hover:text-primary/80 text-sm font-medium">Edit</Link>
+                    <button
+                      type="button"
+                      onClick={() => { if (confirm(`Delete "${e.title}"?`)) deleteMutation.mutate(e.id); }}
+                      className="text-muted-foreground hover:text-destructive"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 )
               }
             ]}

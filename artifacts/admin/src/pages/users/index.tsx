@@ -3,14 +3,15 @@ import { MetricCard } from '@/components/ui/MetricCard';
 import { DataTable } from '@/components/ui/DataTable';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { Link } from 'wouter';
-import { Users, UserPlus, Filter, Loader2 } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
+import { Users, UserPlus, Filter, Loader2, Trash2 } from 'lucide-react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { usersApi } from '@/lib/api';
 import { useState } from 'react';
 
 export default function UsersList() {
   const [roleFilter, setRoleFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const queryClient = useQueryClient();
 
   const params: Record<string, string> = {};
   if (roleFilter) params.role = roleFilter;
@@ -19,6 +20,11 @@ export default function UsersList() {
   const { data, isLoading, error } = useQuery({
     queryKey: ['users', params],
     queryFn: () => usersApi.list(params)
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => usersApi.delete(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['users'] })
   });
 
   const activeUsers = data?.items.filter(u => u.status === 'active').length || 0;
@@ -121,8 +127,17 @@ export default function UsersList() {
           { header: 'Status', accessor: (u) => <StatusBadge status={u.status} /> },
           { 
             header: '', 
-            accessor: () => (
-              <button className="text-primary hover:text-primary/80 text-sm font-medium">Edit</button>
+            accessor: (u) => (
+              <div className="flex items-center justify-end gap-3">
+                <Link href={`/users/${u.id}/edit`} className="text-primary hover:text-primary/80 text-sm font-medium">Edit</Link>
+                <button
+                  type="button"
+                  onClick={() => { if (confirm(`Remove ${u.firstName} ${u.lastName}?`)) deleteMutation.mutate(u.id); }}
+                  className="text-muted-foreground hover:text-destructive"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
             )
           }
         ]}

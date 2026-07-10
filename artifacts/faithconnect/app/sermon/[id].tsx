@@ -1,8 +1,12 @@
 import { HIcon } from "@/components/HIcon";
+import { Audio, AVPlaybackStatus } from "expo-av";
+import { File, Paths } from "expo-file-system";
 import * as Haptics from "expo-haptics";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useState } from "react";
+import * as Sharing from "expo-sharing";
+import React, { useEffect, useRef, useState } from "react";
 import {
+  Alert,
   Image,
   Platform,
   ScrollView,
@@ -24,23 +28,111 @@ export default function SermonDetailScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const [isPlaying, setIsPlaying] = useState(false);
-  const [progress, setProgress] = useState(0.34);
+  const [progress, setProgress] = useState(0);
+  const [durationMillis, setDurationMillis] = useState(0);
+  const [positionMillis, setPositionMillis] = useState(0);
+  const [isBuffering, setIsBuffering] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const soundRef = useRef<Audio.Sound | null>(null);
 
   const { data: sermon, isLoading } = useQuery({ queryKey: ["sermon", id], queryFn: () => fetchSermon(id) });
-  
+
+  const mediaUrl = sermon?.audioUrl || sermon?.videoUrl || null;
+
   const topPadding = Platform.OS === "web" ? 60 : insets.top;
 
-  const togglePlay = () => {
-    setIsPlaying((p) => !p);
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+  const onPlaybackStatusUpdate = (status: AVPlaybackStatus) => {
+    if (!status.isLoaded) return;
+    setIsBuffering(status.isBuffering);
+    setDurationMillis(status.durationMillis ?? 0);
+    setPositionMillis(status.positionMillis);
+    if (status.durationMillis) {
+      setProgress(status.positionMillis / status.durationMillis);
+    }
+    setIsPlaying(status.isPlaying);
+    if (status.didJustFinish) {
+      setIsPlaying(false);
+    }
   };
 
-  const totalSeconds = 42 * 60 + 15;
-  const currentSeconds = Math.floor(totalSeconds * progress);
-  const formatTime = (s: number) => {
-    const m = Math.floor(s / 60);
-    const sec = s % 60;
+  useEffect(() => {
+    return () => {
+      soundRef.current?.unloadAsync();
+    };
+  }, []);
+
+  const togglePlay = async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    if (!mediaUrl) {
+      Alert.alert("No media available", "This sermon doesn't have audio or video attached yet.");
+      return;
+    }
+    try {
+      if (!soundRef.current) {
+        setIsBuffering(true);
+        const { sound } = await Audio.Sound.createAsync(
+          { uri: mediaUrl },
+          { shouldPlay: true },
+          onPlaybackStatusUpdate,
+        );
+        soundRef.current = sound;
+        return;
+      }
+      const status = await soundRef.current.getStatusAsync();
+      if (status.isLoaded && status.isPlaying) {
+        await soundRef.current.pauseAsync();
+      } else {
+        await soundRef.current.playAsync();
+      }
+    } catch (err) {
+      setIsBuffering(false);
+      Alert.alert("Playback error", "Unable to play this sermon's media right now.");
+    }
+  };
+
+  const skip = async (seconds: number) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    if (!soundRef.current) return;
+    const status = await soundRef.current.getStatusAsync();
+    if (!status.isLoaded) return;
+    const next = Math.max(0, Math.min((status.durationMillis ?? 0), status.positionMillis + seconds * 1000));
+    await soundRef.current.setPositionAsync(next);
+  };
+
+  const handleDownload = async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    if (!mediaUrl) {
+      Alert.alert("No media available", "This sermon doesn't have downloadable media yet.");
+      return;
+    }
+    if (Platform.OS === "web") {
+      Alert.alert("Download", "Open this sermon's media link in a new tab to download it on web.");
+      return;
+    }
+    try {
+      setIsDownloading(true);
+      const ext = mediaUrl.split(".").pop()?.split("?")[0] || "mp4";
+      const destination = new File(Paths.document, `sermon-${sermon?.id}.${ext}`);
+      const output = await File.downloadFileAsync(mediaUrl, destination, {
+        idempotent: true,
+      });
+      if (await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(output.uri);
+      } else {
+        Alert.alert("Downloaded", `Saved to ${output.uri}`);
+      }
+    } catch (err) {
+      Alert.alert("Download failed", "Could not download this sermon's media.");
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+  const formatTime = (ms: number) => {
+    const totalSec = Math.floor(ms / 1000);
+    const m = Math.floor(totalSec / 60);
+    const sec = totalSec % 60;
     return `${m}:${sec.toString().padStart(2, "0")}`;
   };
 
@@ -83,11 +175,16 @@ export default function SermonDetailScreen() {
             </TouchableOpacity>
             <Text style={styles.heroHeaderTitle}>Sermon Player</Text>
             <View style={styles.heroHeaderActions}>
-              <TouchableOpacity style={[styles.backBtn, { backgroundColor: "rgba(0,0,0,0.35)" }]}>
-                <HIcon name="share" size={18} color="#FFF" />
-              </TouchableOpacity>
-              <TouchableOpacity style={[styles.backBtn, { backgroundColor: "rgba(0,0,0,0.35)" }]}>
-                <HIcon name="more-vertical" size={18} color="#FFF" />
+              <TouchableOpacity
+                style={[styles.backBtn, { backgroundColor: "rgba(0,0,0,0.35)" }]}
+                onPress={handleDownload}
+                disabled={isDownloading}
+              >
+                {isDownloading ? (
+                  <ActivityIndicator size="small" color="#FFF" />
+                ) : (
+                  <HIcon name="share" size={18} color="#FFF" />
+                )}
               </TouchableOpacity>
             </View>
           </View>
@@ -116,36 +213,47 @@ export default function SermonDetailScreen() {
             </View>
             <View style={styles.progressTimes}>
               <Text style={[styles.timeText, { color: colors.mutedForeground }]}>
-                {formatTime(currentSeconds)}
+                {formatTime(positionMillis)}
               </Text>
               <Text style={[styles.timeText, { color: colors.mutedForeground }]}>
-                {sermon.duration}
+                {durationMillis ? formatTime(durationMillis) : sermon.duration}
               </Text>
             </View>
+            {!mediaUrl && (
+              <Text style={[styles.noMediaText, { color: colors.mutedForeground }]}>
+                No audio or video is attached to this sermon yet.
+              </Text>
+            )}
           </View>
 
           {/* Controls */}
           <View style={styles.controls}>
             <TouchableOpacity
               style={styles.controlBtn}
-              onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
+              onPress={() => skip(-15)}
+              disabled={!mediaUrl}
             >
               <HIcon name="rotate-left" size={26} color={colors.foreground} />
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.playBtn, { backgroundColor: colors.primary }]}
+              style={[styles.playBtn, { backgroundColor: colors.primary, opacity: mediaUrl ? 1 : 0.5 }]}
               onPress={togglePlay}
               activeOpacity={0.85}
             >
-              <HIcon
-                name={isPlaying ? "pause" : "play"}
-                size={30}
-                color="#FFF"
-              />
+              {isBuffering ? (
+                <ActivityIndicator size="small" color="#FFF" />
+              ) : (
+                <HIcon
+                  name={isPlaying ? "pause" : "play"}
+                  size={30}
+                  color="#FFF"
+                />
+              )}
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.controlBtn}
-              onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
+              onPress={() => skip(15)}
+              disabled={!mediaUrl}
             >
               <HIcon name="rotate-right" size={26} color={colors.foreground} />
             </TouchableOpacity>
@@ -154,15 +262,23 @@ export default function SermonDetailScreen() {
           {/* Action Buttons */}
           <View style={styles.actionGrid}>
             {[
-              { icon: "file-text", label: "Sermon Notes" },
-              { icon: "book-open", label: "Full Scripture" },
-              { icon: "download", label: "Download" },
-              { icon: "bookmark", label: "Save Sermon" },
+              { icon: "file-text", label: "Sermon Notes", onPress: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light) },
+              { icon: "book-open", label: "Full Scripture", onPress: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light) },
+              { icon: "download", label: isDownloading ? "Downloading…" : "Download", onPress: handleDownload },
+              {
+                icon: "bookmark",
+                label: isSaved ? "Saved" : "Save Sermon",
+                onPress: () => {
+                  setIsSaved((s) => !s);
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                },
+              },
             ].map((action) => (
               <TouchableOpacity
                 key={action.label}
                 style={[styles.actionCard, { backgroundColor: colors.card, borderColor: colors.border }]}
-                onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
+                onPress={action.onPress}
+                disabled={action.icon === "download" && isDownloading}
                 activeOpacity={0.8}
               >
                 <HIcon name={action.icon as any} size={22} color={colors.foreground} />
@@ -281,6 +397,7 @@ const styles = StyleSheet.create({
     borderColor: "#FFF",
   },
   progressTimes: { flexDirection: "row", justifyContent: "space-between" },
+  noMediaText: { fontSize: 12, fontFamily: "Inter_400Regular", marginTop: 8, textAlign: "center" },
   timeText: { fontSize: 12, fontFamily: "Inter_500Medium" },
   controls: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 32, marginBottom: 28 },
   controlBtn: { padding: 8 },

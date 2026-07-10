@@ -3,8 +3,8 @@ import { MetricCard } from '@/components/ui/MetricCard';
 import { DataTable } from '@/components/ui/DataTable';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { Link } from 'wouter';
-import { Mic2, Plus, PlayCircle, Eye, Search, Loader2 } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
+import { Mic2, Plus, PlayCircle, Eye, Search, Loader2, Trash2 } from 'lucide-react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { sermonsApi } from '@/lib/api';
 import { useState } from 'react';
 
@@ -12,6 +12,7 @@ export default function SermonsList() {
   const [search, setSearch] = useState('');
   const [publishStatus, setPublishStatus] = useState('');
   const [mediaStatus, setMediaStatus] = useState('');
+  const queryClient = useQueryClient();
 
   const params: Record<string, string> = {};
   if (search) params.search = search;
@@ -21,6 +22,11 @@ export default function SermonsList() {
   const { data, isLoading, error } = useQuery({
     queryKey: ['sermons', params],
     queryFn: () => sermonsApi.list(params)
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => sermonsApi.delete(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['sermons'] })
   });
 
   if (isLoading) {
@@ -137,8 +143,17 @@ export default function SermonsList() {
             },
             { 
               header: '', 
-              accessor: () => (
-                <button className="text-primary hover:text-primary/80 text-sm font-medium">Edit</button>
+              accessor: (s) => (
+                <div className="flex items-center justify-end gap-3">
+                  <Link href={`/sermons/${s.id}/edit`} className="text-primary hover:text-primary/80 text-sm font-medium">Edit</Link>
+                  <button
+                    type="button"
+                    onClick={() => { if (confirm(`Delete "${s.title}"?`)) deleteMutation.mutate(s.id); }}
+                    className="text-muted-foreground hover:text-destructive"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
               )
             }
           ]}

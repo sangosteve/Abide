@@ -90,7 +90,14 @@ export default function CreateEvent() {
             <div className="p-6 space-y-6">
               <div className="space-y-1.5">
                 <label className="text-sm font-medium text-foreground mb-2 block">Event Banner</label>
-                <UploadCard label="Upload Banner Image" description="1200x400 recommended for optimal display" icon={ImageIcon} />
+                <UploadCard
+                  label="Upload Banner Image"
+                  description="1200x400 recommended for optimal display"
+                  icon={ImageIcon}
+                  accept="image/*"
+                  currentUrl={formData.bannerUrl}
+                  onUploaded={(url) => setFormData({ ...formData, bannerUrl: url || null })}
+                />
               </div>
 
               <div className="grid grid-cols-2 gap-6 pt-2">
@@ -164,7 +171,8 @@ export default function CreateEvent() {
                     type="url" 
                     className="w-full px-3 py-2 bg-background border border-border rounded-md text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" 
                     placeholder="https://zoom.us/..." 
-                    onChange={e => setFormData({ ...formData, isOnline: !!e.target.value })}
+                    value={formData.address || ''}
+                    onChange={e => setFormData({ ...formData, address: e.target.value, isOnline: !!e.target.value })}
                   />
                 </div>
               </div>

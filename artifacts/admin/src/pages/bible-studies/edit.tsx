@@ -162,7 +162,14 @@ export default function EditBibleStudy() {
 
               <div className="space-y-1.5">
                 <label className="text-sm font-medium text-foreground mb-2 block">Cover Artwork</label>
-                <UploadCard label="Upload Series Cover" description="1920x1080 recommended, max 5MB" icon={ImageIcon} />
+                <UploadCard
+                  label="Upload Series Cover"
+                  description="1920x1080 recommended, max 5MB"
+                  icon={ImageIcon}
+                  accept="image/*"
+                  currentUrl={formData.coverImageUrl}
+                  onUploaded={(url) => setFormData({ ...formData, coverImageUrl: url || null })}
+                />
               </div>
             </div>
           </div>
